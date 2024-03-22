@@ -112,7 +112,6 @@ public class ImageScene extends Application {
             return;
         }
 
-
         for(int i = 0; i < files.length; i++) {
             String fileName = files[i].getName();
             for (String extensions : imageExtensions) {
