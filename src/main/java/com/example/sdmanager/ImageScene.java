@@ -1,10 +1,10 @@
 package com.example.sdmanager;
 
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
@@ -18,7 +18,6 @@ import javafx.scene.image.Image;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Arrays;
 
 public class ImageScene extends Application {
     File folderpath;
@@ -36,7 +35,9 @@ public class ImageScene extends Application {
     VBox rightvbox;
     GridPane grid;
     FlowPane textpane;
+    DatePicker datePicker;
     Stage stage;
+    CheckBox safe;
 
 
     @Override
@@ -44,7 +45,10 @@ public class ImageScene extends Application {
         this.stage = stage;
         grid = new GridPane();
         hbox = new HBox();
-        hbox.getChildren().add(grid);
+        ScrollPane scrollPane = new ScrollPane();
+// Set the GridPane as the content of the ScrollPane
+        scrollPane.setContent(grid);
+        hbox.getChildren().add(scrollPane);
         sort();
 
         Text settings = new Text("Settings:");
@@ -54,17 +58,38 @@ public class ImageScene extends Application {
         textpane.setAlignment(Pos.CENTER);
         textpane.getChildren().add(settings);
         textpane.setHgap(50);
+        textpane.setPadding(new Insets(10, 10, 0, 10));
         HBox searchHbox = new HBox();
         Text searchText = new Text("Search through prompts:");
         TextField searchfield = new TextField();
         Button searchButton = new Button("Search");
         searchHbox.getChildren().addAll(searchfield, searchButton);
+        VBox searchvbox = new VBox();
+        searchvbox.getChildren().addAll(searchText, searchHbox);
 
         rightvbox = new VBox();
-        rightvbox.getChildren().addAll(textpane, searchText, searchHbox);
+
+        Text datetext = new Text("Date:");
+        datePicker = new DatePicker();
+
+
+        FlowPane safepane = new FlowPane();
+        Text safetext = new Text(" Safe");
+        safe = new CheckBox();
+        safe.setSelected(true);
+        safepane.getChildren().addAll(safe, safetext);
+
+
+
+        Text dimensionstext = new Text("Dimensions:");
+        ChoiceBox<String> dimensions = new ChoiceBox<>();
+        dimensions.getItems().addAll("All", "300x300", "600x600", "900x900");
+        dimensions.setValue("All");
+
+        rightvbox.getChildren().addAll(textpane, searchText, searchvbox, datetext, datePicker, dimensionstext, dimensions, safepane);
+        rightvbox.setSpacing(10);
+        rightvbox.setPadding(new Insets(0, 10, 0, 10));
         hbox.getChildren().add(rightvbox);
-
-
 
 
         Scene galleryScene = new Scene(hbox, 1200, 720);
@@ -73,7 +98,6 @@ public class ImageScene extends Application {
 
         stage.setTitle("Gallery");
         stage.show();
-
 
     }
 
