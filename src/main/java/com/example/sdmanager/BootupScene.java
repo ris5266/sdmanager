@@ -103,7 +103,6 @@ public class BootupScene extends Application {
     }
 
 
-
     public static void main(String[] args) {
         launch();
     }
