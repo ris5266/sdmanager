@@ -23,7 +23,7 @@ public class BootupScene extends Application {
     Text tutorial;
     TextField path;
     Button inputButton;
-    File selectedFile;
+    File folderpath;
     // layouts
     VBox vbox;
     GridPane inputField;
@@ -52,9 +52,9 @@ public class BootupScene extends Application {
 
         DirectoryChooser directorychooser = new DirectoryChooser();
         inputButton.setOnAction(e -> {
-            selectedFile = directorychooser.showDialog(stage);
-            if(selectedFile != null) {
-                path.setText(selectedFile.getAbsolutePath());
+            folderpath = directorychooser.showDialog(stage);
+            if(folderpath != null) {
+                path.setText(folderpath.getAbsolutePath());
                 submit.setDisable(false);
             }
         });
@@ -96,8 +96,8 @@ public class BootupScene extends Application {
 
     public void submit() {
             // change bootup scene to gallery scene
-            if(selectedFile != null) {
-                ImageScene gallery = new ImageScene(selectedFile);
+            if(folderpath != null) {
+                ImageScene gallery = new ImageScene(folderpath);
                 gallery.start(stage);
             }
     }
