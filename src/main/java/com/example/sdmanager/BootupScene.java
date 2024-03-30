@@ -97,7 +97,7 @@ public class BootupScene extends Application {
     public void submit() {
             // change bootup scene to gallery scene
             if(folderpath != null) {
-                ImageScene gallery = new ImageScene(folderpath);
+                GalleryScene gallery = new GalleryScene(folderpath);
                 gallery.start(stage);
             }
     }
