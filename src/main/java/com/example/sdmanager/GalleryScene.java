@@ -200,10 +200,10 @@ public class GalleryScene extends Application {
 
     public void load() {
 
-
-
-
         // txt file laden
+
+
+
         if(characteramount == 0) {
             nocharacterspane = new FlowPane();
             nocharacters = new Label("no characters found ☹\uFE0F");

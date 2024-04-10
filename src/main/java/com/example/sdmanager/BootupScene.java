@@ -5,6 +5,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -89,6 +90,7 @@ public class BootupScene extends Application {
 
 
         scene = new Scene(mainVbox, 800, 600);
+        stage.getIcons().add(new Image(getClass().getResource("/images/icon.jpg").toExternalForm()));
         stage.setTitle("sdmanager");
         stage.setScene(scene);
         stage.show();

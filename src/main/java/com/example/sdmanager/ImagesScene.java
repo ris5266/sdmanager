@@ -1,17 +1,26 @@
 package com.example.sdmanager;
 
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.Directory;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.MetadataReader;
+import com.drew.metadata.Tag;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
@@ -27,10 +36,14 @@ public class ImagesScene extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-    ImageView pictures;
-    GridPane imagesGrid;
-    File imagepath = null;
-    int imageamout;
+
+    private ImageView pictures;
+    private GridPane imagesGrid;
+    private File imagepath = null;
+    private int imageamout;
+    private Text amountText;
+    private Stage primaryStage;
+
 
     public ImagesScene(File imagepath) {
         this.imagepath = imagepath;
@@ -38,6 +51,7 @@ public class ImagesScene extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        this.primaryStage = primaryStage;
         // teilter teilt in linke und rechte hölfte
         HBox teiler = new HBox();
         teiler.setPrefHeight(800);
@@ -117,7 +131,6 @@ public class ImagesScene extends Application {
             promptsScene.start(primaryStage);
         });
 
-
         // settings button
         FlowPane settingspane = new FlowPane();
         settingspane.setAlignment(Pos.CENTER);
@@ -138,7 +151,7 @@ public class ImagesScene extends Application {
         // rechte hälfte mit amountnamen und images
         VBox imagesVbox = new VBox();
         FlowPane amountPane = new FlowPane();
-        Text amountText = new Text(imageamout + " images added to viewport");
+        amountText = new Text(imageamout + " images added to viewport");
         amountPane.getChildren().add(amountText);
         amountPane.setMargin(amountText, new Insets(12, 0, 5, 0));
         amountPane.setPrefHeight(54);
@@ -146,14 +159,22 @@ public class ImagesScene extends Application {
         amountText.setFont(new Font(14));
 
 
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setPrefHeight(700);
+        scrollPane.setPrefWidth(982);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+
 
         imagesGrid = new GridPane();
+        scrollPane.setContent(imagesGrid);
+
+        imagesGrid.setPrefHeight(700);
+        imagesGrid.setPrefWidth(982);
         imagesGrid.setHgap(20);
         imagesGrid.setVgap(20);
-        imagesGrid.setPrefHeight(365);
-        imagesGrid.setPrefWidth(400);
 
-        imagesVbox.getChildren().addAll(amountPane, imagesGrid);
+
+        imagesVbox.getChildren().addAll(amountPane, scrollPane);
         teiler.getChildren().add(imagesVbox);
 
         settings.setOnAction(e -> {
@@ -164,6 +185,7 @@ public class ImagesScene extends Application {
             settingsScene.start(stage);
             stage.showAndWait();
         });
+
         sort();
         header.getChildren().addAll(softwarepane, inputpane, buttonpane, settingspane);
         Scene scene = new Scene(teiler, 1200, 800);
@@ -173,8 +195,6 @@ public class ImagesScene extends Application {
 
         primaryStage.setTitle("Diffusion Depot");
         primaryStage.show();
-
-
     }
 
     public void sort() {
@@ -182,15 +202,16 @@ public class ImagesScene extends Application {
         String[] imageExtensions = new String[]{"jpg", "png", "gif", "bmp", "jpeg"};
         File[] files = imagepath.listFiles();
 
-
         if (files == null) {
             System.out.println("No files found");
             imageamout = 0;
+            amountText.setText(imageamout + " images added to viewport");
             return;
         }
 
         imageamout = files.length;
-        for(int i = 0; i < files.length; i++) {
+        amountText.setText(imageamout + " images added to viewport");
+        for (int i = 0; i < files.length; i++) {
             String fileName = files[i].getName();
             for (String extensions : imageExtensions) {
                 if (fileName.endsWith("." + extensions)) {
@@ -198,13 +219,117 @@ public class ImagesScene extends Application {
                         FileInputStream fileInputStream = new FileInputStream(files[i]);
                         Image image = new Image(fileInputStream);
                         pictures = new ImageView(image);
+
+                        // Set the ImageView's preserveRatio property to true
+                        pictures.setPreserveRatio(true);
+
+                        // Set the ImageView's viewport to display a portion of the image
+                        double width = image.getWidth();
+                        double height = image.getHeight();
+                        double boxRatio = 300.0 / 300.0;
+                        double imageAspect = width / height;
+
+                        if (imageAspect > boxRatio) {
+                            // The image is wider than the desired aspect ratio, so we need to crop the width
+                            double newWidth = height * boxRatio;
+                            double xOffset = (width - newWidth) / 2;
+                            pictures.setViewport(new Rectangle2D(xOffset, 0, newWidth, height));
+                        } else {
+                            // The image is taller than the desired aspect ratio, so we need to crop the height
+                            double newHeight = width / boxRatio;
+                            double yOffset = (height - newHeight) / 2;
+                            pictures.setViewport(new Rectangle2D(0, yOffset, width, newHeight));
+                        }
+
                         pictures.setFitHeight(300);
                         pictures.setFitWidth(300);
-                        imagesGrid.add(pictures, i % 3, j);
+
+
+
+                        // Create a semi-transparent Rectangle and a Label
+                        Rectangle overlay = new Rectangle(300, 300, Color.color(0, 0, 0, 0.5));
+                        Label overlayText = new Label();
+                        Metadata metadata = ImageMetadataReader.readMetadata(files[i]);
+
+                        StringBuilder output = new StringBuilder();
+
+
+
+                        System.out.println(overlayText.getText());
+
+
+
+                        overlayText.setMaxWidth(pictures.getFitWidth());
+                        overlayText.setTextFill(Color.WHITE);
+
+
+                        // Initially hide the overlay and the text
+                        overlay.setVisible(false);
+                        overlayText.setVisible(false);
+
+                        // Create a StackPane to hold the ImageView, Rectangle and Label
+                        StackPane stackPane = new StackPane();
+                        stackPane.getChildren().addAll(pictures, overlay, overlayText);
+
+// Add an EventHandler to the ImageView
+                        stackPane.setOnMouseClicked(event -> {
+                            // Toggle the visibility of the overlay and the text
+                            boolean isVisible = overlay.isVisible();
+                            overlay.setVisible(!isVisible);
+                            overlayText.setVisible(!isVisible);
+
+                            if (overlay.isVisible()) {
+                                output.setLength(0);
+                                for (Directory directory : metadata.getDirectories()) {
+                                    if (directory.getTags().toArray()[0].toString().contains("Image Width")) {
+                                        output.append("Image Width: " + directory.getTags().toArray()[0].toString().split("- ")[1] + "\n");
+                                        output.append("Image Height: " + directory.getTags().toArray()[1].toString().split("- ")[1] + "\n");
+                                        output.append("\n");
+                                    }
+                                    if (directory.getTags().toArray()[0].toString().contains("prompt")) {
+                                        String prompt = directory.getTags().toArray()[0].toString();
+                                        System.out.println(prompt);
+
+
+                                        output.append("Prompt: " + prompt.split("parameters: ")[1].split("Negative prompt")[0]);
+                                        prompt = prompt.split("parameters: ")[1];
+                                        output.append("Negative prompt: " + prompt.split("Negative prompt: ")[1].split("Steps:")[0] + "\n");
+                                        prompt = prompt.split("Negative prompt: ")[1];
+                                        output.append("Steps: " + prompt.split("Steps: ")[1].split(", Sampler")[0] + "\n");
+                                        output.append("Sampler: " + prompt.split(", Sampler: ")[1].split(", CFG scale")[0] + "\n");
+                                        prompt = prompt.split(", Sampler: ")[1];
+                                        output.append("CFG scale: " + prompt.split("CFG scale: ")[1].split(", Seed")[0] + "\n");
+                                        prompt = prompt.split("CFG scale: ")[1];
+
+                                        prompt = prompt.split("Seed: ")[1];
+                                        output.append("Seed: " + prompt.split(", Face restoration")[0] + "\n");
+                                        output.append("Face Restoration: " + prompt.split("Face restoration: ")[1].split(", Size: ")[0] + "\n");
+                                        prompt = prompt.split("Model: ")[1];
+                                        output.append("Model: " + prompt.split(", Clip skip: ")[0] + "\n");
+                                        prompt = prompt.split("Clip skip: ")[1];
+                                        output.append("Clip Skip: " + prompt.split(", Version: ")[0] + "\n");
+                                    }
+
+                                }
+                                overlayText.setText(output.toString());
+                            } else {
+                                overlayText.setText("");
+                            }
+                        });
+
+
+// Add the StackPane to the GridPane instead of the ImageView
+                        imagesGrid.add(stackPane, i % 3, j);
                         if (i % 3 == 2) {
                             j++;
                         }
+
+
+
+
                     } catch (IOException e) {
+                    } catch (ImageProcessingException e) {
+                        throw new RuntimeException(e);
                     }
                     break;
                 }

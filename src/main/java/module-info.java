@@ -4,7 +4,6 @@ module com.example.sdmanager {
     requires metadata.extractor;
 
 
-
     opens com.example.sdmanager to javafx.fxml;
     exports com.example.sdmanager;
 }
