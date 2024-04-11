@@ -15,6 +15,9 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class BootupScene extends Application {
     // components
@@ -34,6 +37,8 @@ public class BootupScene extends Application {
     Scene scene;
     Stage stage;
 
+    private static final String CONFIG_FILE_PATH = "config.txt";
+
     @Override
     public void start(Stage stage) throws IOException {
         this.stage = stage;
@@ -45,6 +50,8 @@ public class BootupScene extends Application {
         inputButton = new Button("+");
         inputField = new GridPane();
         submit = new Button("Submit");
+
+
 
         welcome = new Text("Welcome");
         tutorial = new Text("please select your sd output folder:");
@@ -60,8 +67,24 @@ public class BootupScene extends Application {
             }
         });
 
+        // Check if config file exists
+        if (Files.exists(Paths.get(CONFIG_FILE_PATH))) {
+            String savedPath = readConfigFile();
+            if (savedPath != null) {
+                folderpath = new File(savedPath);
+                GalleryScene gallery = new GalleryScene(folderpath);
+                gallery.start(stage);
+                return;
+            }
+        }
+
         submit.setOnAction(e -> {
             submit();
+            try {
+                savePathToConfigFile(folderpath.getAbsolutePath());
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         });
 
         pane.setAlignment(Pos.CENTER);
@@ -90,7 +113,6 @@ public class BootupScene extends Application {
 
 
         scene = new Scene(mainVbox, 800, 600);
-        stage.getIcons().add(new Image(getClass().getResource("/images/icon.jpg").toExternalForm()));
         stage.setTitle("sdmanager");
         stage.setScene(scene);
         stage.show();
@@ -102,6 +124,14 @@ public class BootupScene extends Application {
                 GalleryScene gallery = new GalleryScene(folderpath);
                 gallery.start(stage);
             }
+    }
+
+    private void savePathToConfigFile(String path) throws IOException {
+        Files.write(Paths.get(CONFIG_FILE_PATH), path.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private String readConfigFile() throws IOException {
+        return new String(Files.readAllBytes(Paths.get(CONFIG_FILE_PATH)), StandardCharsets.UTF_8);
     }
 
 

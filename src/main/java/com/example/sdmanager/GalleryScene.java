@@ -14,13 +14,19 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.Parent;
 
 import java.io.File;
 import java.io.FileReader;
-
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class GalleryScene extends Application {
@@ -162,6 +168,10 @@ public class GalleryScene extends Application {
             add.setStyle("-fx-background-color: #ffbe0b");
         });
 
+        add.setOnAction(e -> {
+            createCollectionModal();
+        });
+
         settings.setOnAction(e -> {
             SettingsScene settingsScene = new SettingsScene(folderpath);
 
@@ -172,7 +182,7 @@ public class GalleryScene extends Application {
         });
 
         FlowPane amountPane = new FlowPane();
-        Text amountText = new Text(characteramount + " characters added to viewport");
+        Text amountText = new Text(characteramount + " collections added to viewport");
         amountPane.getChildren().add(amountText);
         amountHbox.setPadding( new Insets(12, 0, 0, 0));
         amountHbox.setPrefWidth(400);
@@ -198,15 +208,78 @@ public class GalleryScene extends Application {
         primaryStage.show();
     }
 
+
+    private void createCollectionModal() {
+        Stage modal = new Stage();
+        modal.initModality(Modality.APPLICATION_MODAL);
+
+        VBox layout = new VBox();
+        TextField nameInput = new TextField();
+        nameInput.setPromptText("Collection Name");
+
+        HBox profilePictureInputBox = new HBox();
+        TextField profilePictureInput = new TextField();
+        profilePictureInput.setPromptText("Profile Picture URL");
+        Button profilePictureButton = new Button("Select Image");
+
+        profilePictureButton.setOnAction(e -> {
+            FileChooser fileChooser = new FileChooser();
+            File file = fileChooser.showOpenDialog(modal);
+            if (file != null) {
+                profilePictureInput.setText(file.toURI().toString());
+            }
+        });
+
+        profilePictureInputBox.getChildren().addAll(profilePictureInput, profilePictureButton);
+
+        HBox imagesInputBox = new HBox();
+        TextField imagesInput = new TextField();
+        imagesInput.setPromptText("Image Folder");
+        Button imagesButton = new Button("Select Folder");
+        imagesButton.setOnAction(e -> {
+            DirectoryChooser directoryChooser = new DirectoryChooser();
+            File directory = directoryChooser.showDialog(modal);
+            if (directory != null) {
+                imagesInput.setText(directory.getAbsolutePath());
+            }
+        });
+        imagesInputBox.getChildren().addAll(imagesInput, imagesButton);
+
+        Button submit = new Button("Create Collection");
+        submit.setOnAction(e -> {
+            String name = nameInput.getText();
+            String profilePictureUrl = profilePictureInput.getText();
+            String imageUrls = imagesInput.getText();
+
+            if (profilePictureUrl != null && !imageUrls.isEmpty()) {
+                Collection collection = new Collection(name, profilePictureUrl, imageUrls);
+
+                modal.close();
+            } else {
+            }
+        });
+
+        Scene modalScene = new Scene(layout);
+        modal.setScene(modalScene);
+        modal.showAndWait();
+    }
+
+    private boolean isValidUrl(String url) {
+        try {
+            new URL(url);
+            return true;
+        } catch (MalformedURLException e) {
+            return false;
+        }
+    }
+
     public void load() {
 
         // txt file laden
 
-
-
         if(characteramount == 0) {
             nocharacterspane = new FlowPane();
-            nocharacters = new Label("no characters found ☹\uFE0F");
+            nocharacters = new Label("no collections found ☹\uFE0F");
             nocharacters.setAlignment(Pos.CENTER);
             nocharacterspane.setAlignment(Pos.CENTER);
             nocharacterspane.setPrefHeight(1167);
