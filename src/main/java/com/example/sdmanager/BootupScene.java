@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectInputFilter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -37,7 +38,7 @@ public class BootupScene extends Application {
     Scene scene;
     Stage stage;
 
-    private static final String CONFIG_FILE_PATH = "config.txt";
+
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -68,22 +69,21 @@ public class BootupScene extends Application {
         });
 
         // Check if config file exists
-        if (Files.exists(Paths.get(CONFIG_FILE_PATH))) {
-            String savedPath = readConfigFile();
+        if (Files.exists(Paths.get(("config.json")
+        ))) {
+            File savedPath = ConfigReader.returnImagePath();
             if (savedPath != null) {
-                folderpath = new File(savedPath);
-                GalleryScene gallery = new GalleryScene(folderpath);
+                GalleryScene gallery = new GalleryScene();
                 gallery.start(stage);
                 return;
             }
         }
 
         submit.setOnAction(e -> {
-            submit();
             try {
-                savePathToConfigFile(folderpath.getAbsolutePath());
+                submit();
             } catch (IOException ex) {
-                ex.printStackTrace();
+                throw new RuntimeException(ex);
             }
         });
 
@@ -118,22 +118,14 @@ public class BootupScene extends Application {
         stage.show();
     }
 
-    public void submit() {
-            // change bootup scene to gallery scene
-            if(folderpath != null) {
-                GalleryScene gallery = new GalleryScene(folderpath);
-                gallery.start(stage);
-            }
+    private void submit() throws IOException {
+        if(folderpath != null) {
+            ConfigReader.writeImagePath(folderpath.getAbsolutePath());
+            GalleryScene gallery = null;
+            gallery = new GalleryScene();
+            gallery.start(stage);
+        }
     }
-
-    private void savePathToConfigFile(String path) throws IOException {
-        Files.write(Paths.get(CONFIG_FILE_PATH), path.getBytes(StandardCharsets.UTF_8));
-    }
-
-    private String readConfigFile() throws IOException {
-        return new String(Files.readAllBytes(Paths.get(CONFIG_FILE_PATH)), StandardCharsets.UTF_8);
-    }
-
 
     public static void main(String[] args) {
         launch();

@@ -14,10 +14,15 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class SettingsScene extends Application {
 
@@ -26,8 +31,7 @@ public class SettingsScene extends Application {
     }
 
     File imagepath = null;
-    public SettingsScene(File imagepath) {
-        this.imagepath = imagepath;
+    public SettingsScene() {
     }
 
     @Override
@@ -54,9 +58,22 @@ public class SettingsScene extends Application {
         inputpath.setPrefWidth(250);
         inputpath.setText(imagepath.getAbsolutePath());
 
-        Text safe = new Text("Safe mode: ");
-        RadioButton safebutton = new RadioButton();
-        safe.setTextAlignment(TextAlignment.CENTER);
+        Button inputButton = new Button("+");
+        inputButton.setPrefHeight(26);
+        inputButton.setPrefWidth(26);
+        inputButton.setOnAction(e -> {
+            DirectoryChooser directoryChooser = new DirectoryChooser();
+            directoryChooser.setTitle("Select Folder");
+            File selectedDirectory = directoryChooser.showDialog(stage);
+            if (selectedDirectory != null) {
+                inputpath.setText(selectedDirectory.getAbsolutePath());
+            }
+        });
+
+
+        // Text safe = new Text("Safe mode: ");
+        // RadioButton safebutton = new RadioButton();
+        // safe.setTextAlignment(TextAlignment.CENTER);
 
 
 
@@ -72,18 +89,32 @@ public class SettingsScene extends Application {
         main.setAlignment(Pos.CENTER);
         settings.add(path, 0, 1);
         settings.add(inputpath, 1, 1);
-        settings.add(safe, 0, 2);
-        settings.add(safebutton, 1, 2);
+        settings.add(inputButton, 2, 1);
+
+        // settings.add(safe, 0, 2);
+        // settings.add(safebutton, 1, 2);
+
         settings.setAlignment(Pos.TOP_CENTER);
         settings.setVgap(10);
         settings.setHgap(10);
 
         apply.setOnAction(e -> {
+            // Speichern Sie den aktualisierten Pfad in der Konfigurationsdatei
+            try {
+                ConfigReader.writeImagePath(imagepath.getAbsolutePath());
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            //reload gallery with new path
+            GalleryScene gallery = null;
+            try {
+                gallery = new GalleryScene();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            gallery.start(stage);
             stage.close();
         });
-
-
-
 
         main.getChildren().addAll(headerpane, settings, applypane);
 
@@ -92,7 +123,5 @@ public class SettingsScene extends Application {
         stage.setTitle("Settings");
         Scene scene = new Scene(main, 600, 400);
         stage.setScene(scene);
-
-
     }
 }

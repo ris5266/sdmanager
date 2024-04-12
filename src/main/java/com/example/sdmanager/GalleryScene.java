@@ -19,11 +19,16 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.Parent;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,20 +39,18 @@ public class GalleryScene extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+    File imagepath;
+
     GridPane imagesGrid;
     VBox imagesVbox;
-
-    File folderpath = null;
-    int characteramount = 0;
     Label nocharacters;
     FlowPane nocharacterspane;
 
-    public GalleryScene() {
-        folderpath = new File("/Users/rich/Desktop/images");
-    }
+    int characteramount = 0;
 
-    public GalleryScene(File folderpath) {
-        this.folderpath = folderpath;
+
+    public GalleryScene() throws IOException {
+        imagepath = ConfigReader.returnImagePath();
     }
 
     @Override
@@ -122,12 +125,12 @@ public class GalleryScene extends Application {
         });
 
         prompts.setOnAction(e -> {
-            PromptsScene promptsScene = new PromptsScene(folderpath);
+            PromptsScene promptsScene = new PromptsScene();
             promptsScene.start(primaryStage);
         });
 
         images.setOnAction(e -> {
-            ImagesScene imageScene = new ImagesScene(folderpath);
+            ImagesScene imageScene = new ImagesScene();
             imageScene.start(primaryStage);
         });
 
@@ -173,7 +176,7 @@ public class GalleryScene extends Application {
         });
 
         settings.setOnAction(e -> {
-            SettingsScene settingsScene = new SettingsScene(folderpath);
+            SettingsScene settingsScene = new SettingsScene();
 
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
@@ -196,8 +199,6 @@ public class GalleryScene extends Application {
 
         teiler.getChildren().add(imagesVbox);
         load();
-
-
 
         header.getChildren().addAll(softwarepane, inputpane, buttonpane, settingspane);
         Scene scene = new Scene(teiler, 1200, 800);

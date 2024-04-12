@@ -16,6 +16,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.IOException;
 
 public class PromptsScene extends Application {
 
@@ -25,8 +26,7 @@ public class PromptsScene extends Application {
     File imagepath = null;
     int promptamount = 0;
 
-    public PromptsScene(File imagepath) {
-        this.imagepath = imagepath;
+    public PromptsScene() {
     }
 
     @Override
@@ -118,12 +118,17 @@ public class PromptsScene extends Application {
         });
 
         home.setOnAction(e -> {
-            GalleryScene promptsScene = new GalleryScene(imagepath);
+            GalleryScene promptsScene = null;
+            try {
+                promptsScene = new GalleryScene();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
             promptsScene.start(primaryStage);
         });
 
         images.setOnAction(e -> {
-            ImagesScene imagesScene = new ImagesScene(imagepath);
+            ImagesScene imagesScene = new ImagesScene();
             imagesScene.start(primaryStage);
         });
 
@@ -158,7 +163,7 @@ public class PromptsScene extends Application {
         amountHbox.getChildren().addAll(amountPane, add);
 
         settings.setOnAction(e -> {
-            SettingsScene settingsScene = new SettingsScene(imagepath);
+            SettingsScene settingsScene = new SettingsScene();
 
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);

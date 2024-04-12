@@ -45,8 +45,7 @@ public class ImagesScene extends Application {
     private Stage primaryStage;
 
 
-    public ImagesScene(File imagepath) {
-        this.imagepath = imagepath;
+    public ImagesScene() {
     }
 
     @Override
@@ -122,12 +121,17 @@ public class ImagesScene extends Application {
         });
 
         prompts.setOnAction(e -> {
-            PromptsScene promptsScene = new PromptsScene(imagepath);
+            PromptsScene promptsScene = new PromptsScene();
             promptsScene.start(primaryStage);
         });
 
         home.setOnAction(e -> {
-            GalleryScene promptsScene = new GalleryScene(imagepath);
+            GalleryScene promptsScene = null;
+            try {
+                promptsScene = new GalleryScene();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
             promptsScene.start(primaryStage);
         });
 
@@ -178,7 +182,7 @@ public class ImagesScene extends Application {
         teiler.getChildren().add(imagesVbox);
 
         settings.setOnAction(e -> {
-            SettingsScene settingsScene = new SettingsScene(imagepath);
+            SettingsScene settingsScene = new SettingsScene();
 
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
@@ -323,9 +327,6 @@ public class ImagesScene extends Application {
                         if (i % 3 == 2) {
                             j++;
                         }
-
-
-
 
                     } catch (IOException e) {
                     } catch (ImageProcessingException e) {
