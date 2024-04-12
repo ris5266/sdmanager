@@ -4,6 +4,7 @@ module com.example.sdmanager {
     requires metadata.extractor;
     requires jdk.jsobject;
     requires org.json;
+    requires java.desktop;
 
 
     opens com.example.sdmanager to javafx.fxml;

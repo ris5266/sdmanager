@@ -1,0 +1,37 @@
+package com.example.sdmanager;
+
+public class Prompt {
+    private String posPrompt;
+    private String negPrompt;
+    private String profilePicture;
+
+    Prompt(String negPrompt, String posPrompt, String profilePicture) {
+        this.posPrompt = posPrompt;
+        this.negPrompt = negPrompt;
+        this.profilePicture = profilePicture;
+    }
+
+    public String getNegPrompt() {
+        return negPrompt;
+    }
+
+    public String getPosPrompt() {
+        return posPrompt;
+    }
+
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setNegPrompt(String negPrompt) {
+        this.negPrompt = negPrompt;
+    }
+
+    public void setPosPrompt(String posPrompt) {
+        this.posPrompt = posPrompt;
+    }
+
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
+    }
+}

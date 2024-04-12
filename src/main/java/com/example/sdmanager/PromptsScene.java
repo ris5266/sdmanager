@@ -1,38 +1,146 @@
 package com.example.sdmanager;
 
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.scene.Parent;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 public class PromptsScene extends Application {
 
     public static void main(String[] args) {
         launch(args);
     }
-    File imagepath = null;
-    int promptamount = 0;
 
-    public PromptsScene() {
+    File imagepath;
+
+    GridPane imagesGrid;
+    VBox imagesVbox;
+    Label nocharacters;
+    FlowPane nocharacterspane;
+
+    private Text amountText;
+
+    int characteramount = 0;
+    Prompt[] promptsObject;
+    Scene modalScene;
+    Scene scene;
+    HBox teiler;
+    Stage stage;
+
+
+    public PromptsScene() throws IOException {
+        try {
+            promptsObject = ConfigReader.readPromptsInformation();
+        } catch (JSONException e) {
+            promptsObject = null;
+        }
     }
 
     @Override
     public void start(Stage primaryStage) {
-        // teilter teilt in linke und rechte hölfte
-        HBox teiler = new HBox();
+        this.stage = primaryStage;
+        load();
+    }
+
+
+    private void createCollectionModal() {
+        Stage modal = new Stage();
+        modal.initModality(Modality.APPLICATION_MODAL);
+
+        HBox profilePictureInputBox = new HBox();
+        TextField profilePictureInput = new TextField();
+        profilePictureInput.setPromptText("Profile Picture URL");
+        Button profilePictureButton = new Button("Select Image");
+
+        VBox layout = new VBox();
+        TextField posPrompt = new TextField();
+        posPrompt.setPromptText("Positive Prompt");
+
+        VBox layout2 = new VBox();
+        TextField negPrompt = new TextField();
+        negPrompt.setPromptText("Negative Prompt");
+
+
+        profilePictureButton.setOnAction(e -> {
+            FileChooser fileChooser = new FileChooser();
+            File file = fileChooser.showOpenDialog(modal);
+            if (file != null) {
+                profilePictureInput.setText(file.toURI().toString());
+            }
+        });
+
+        profilePictureInputBox.getChildren().addAll(profilePictureInput, profilePictureButton);
+
+        Button submit = new Button("Create Prompt");
+        submit.setOnAction(e -> {
+            String pPrompt = posPrompt.getText();
+            String nPrompt = negPrompt.getText();
+            String profilePictureUrl = profilePictureInput.getText();
+
+            if (!profilePictureUrl.isEmpty() && !pPrompt.isEmpty() && !nPrompt.isEmpty()) {
+                Prompt finalprompt = new Prompt(pPrompt, profilePictureUrl, nPrompt);
+                try {
+                    ConfigReader.writePromptsInformation(finalprompt);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+                modal.close();
+            } else {
+            }
+        });
+
+        layout.getChildren().addAll(posPrompt, negPrompt, profilePictureInputBox, submit);
+
+        modalScene = new Scene(layout);
+        modal.setScene(modalScene);
+        modal.showAndWait();
+    }
+
+    private boolean isValidUrl(String url) {
+        try {
+            new URL(url);
+            return true;
+        } catch (MalformedURLException e) {
+            return false;
+        }
+    }
+
+    public void load() {
+        // teilter teilt in linke und rechte hälfte
+        teiler = new HBox();
         teiler.setPrefHeight(800);
         teiler.setPrefWidth(1200);
 
@@ -74,6 +182,22 @@ public class PromptsScene extends Application {
         images.setPrefWidth(201);
         prompts.setPrefWidth(201);
 
+        Button add = new Button("Add");
+        add.setStyle("-fx-background-color: #ffbe0b");
+        add.setPrefWidth(70);
+        add.setPrefHeight(26);
+
+        add.setOnMouseEntered(e -> {
+            add.setStyle("-fx-background-color: #f2c035");
+        });
+        add.setOnMouseExited(e -> {
+            add.setStyle("-fx-background-color: #ffbe0b");
+        });
+
+        add.setOnAction(e -> {
+            createCollectionModal();
+        });
+
         home.setStyle("-fx-background-color: white");
         images.setStyle("-fx-background-color: white");
         prompts.setStyle("-fx-background-color: white");
@@ -83,6 +207,7 @@ public class PromptsScene extends Application {
         });
         home.setOnMouseExited(e -> {
             home.setStyle("-fx-background-color: white");
+
         });
 
         images.setOnMouseEntered(e -> {
@@ -99,6 +224,26 @@ public class PromptsScene extends Application {
             prompts.setStyle("-fx-background-color: white");
         });
 
+        home.setOnAction(e -> {
+            GalleryScene galleryScene = null;
+            try {
+                galleryScene = new GalleryScene();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            galleryScene.start(stage);
+        });
+
+        images.setOnAction(e -> {
+            ImagesScene imageScene = null;
+            try {
+                imageScene = new ImagesScene();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            imageScene.start(stage);
+        });
+
 
         // settings button
         FlowPane settingspane = new FlowPane();
@@ -108,90 +253,127 @@ public class PromptsScene extends Application {
         settingspane.getChildren().add(settings);
         settingspane.setPrefHeight(33);
         settingspane.setPrefWidth(201);
+
         settings.setPrefWidth(201);
 
         settings.setOnMouseEntered(e -> {
-            settings.setStyle("-fx-background-color: #ffbe0b");
+            settings.setStyle("-fx-background-color: #f2ce6b");
         });
         settings.setOnMouseExited(e -> {
             settings.setStyle("-fx-background-color: white");
         });
 
-        home.setOnAction(e -> {
-            GalleryScene promptsScene = null;
-            try {
-                promptsScene = new GalleryScene();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-            promptsScene.start(primaryStage);
-        });
-
-        images.setOnAction(e -> {
-            ImagesScene imagesScene = null;
-            try {
-                imagesScene = new ImagesScene();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-            imagesScene.start(primaryStage);
-        });
-
-        // rechte hälfte mit amountnamen und images
-        VBox imagesVbox = new VBox();
-        HBox amountHbox = new HBox();
-        imagesVbox.getChildren().add(amountHbox);
-        imagesVbox.setPrefHeight(803);
-        imagesVbox.setPrefWidth(1008);
-        Button add = new Button("Add");
-        add.setStyle("-fx-background-color: #ffbe0b");
-        add.setPrefWidth(70);
-        add.setPrefHeight(26);
-
-        add.setOnMouseEntered(e -> {
-            add.setStyle("-fx-background-color: #f2c035");
-        });
-        add.setOnMouseExited(e -> {
-            add.setStyle("-fx-background-color: #ffbe0b");
-        });
-
-        FlowPane amountPane = new FlowPane();
-        Text amountText = new Text(promptamount + " prompts added to viewport");
-        amountPane.getChildren().add(amountText);
-        amountHbox.setPadding( new Insets(12, 0, 0, 0));
-        amountHbox.setPrefWidth(400);
-        amountHbox.setPrefHeight(65);
-
-        amountPane.setPrefHeight(92);
-        amountPane.setPrefWidth(924);
-        amountText.setFont(new Font(14));
-        amountHbox.getChildren().addAll(amountPane, add);
-
         settings.setOnAction(e -> {
-            SettingsScene settingsScene = new SettingsScene();
+            SettingsScene settingsScene = null;
+            try {
+                settingsScene = new SettingsScene(stage);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
 
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             settingsScene.start(stage);
             stage.showAndWait();
         });
-
-        GridPane imagesGrid = new GridPane();
-        imagesGrid.setHgap(20);
-        imagesGrid.setVgap(20);
-        imagesGrid.setPrefHeight(365);
-        imagesGrid.setPrefWidth(400);
-        imagesVbox.getChildren().add(imagesGrid);
-
-        teiler.getChildren().add(imagesVbox);
         header.getChildren().addAll(softwarepane, inputpane, buttonpane, settingspane);
+        // rechte hälfte mit amountnamen und images
+
+        VBox imagesVbox = new VBox();
+        imagesVbox.setPrefHeight(800);
+        imagesVbox.setPrefWidth(980);
+        FlowPane amountPane = new FlowPane();
+
+        amountPane.setPrefHeight(92);
+        amountPane.setPrefWidth(924);
+        amountText = new Text("");
+        amountText.setFont(new Font(14));
+        amountPane.getChildren().add(amountText);
+
+        HBox hboxright = new HBox();
+        hboxright.setPadding( new Insets(12, 0, 0, 0));
+        hboxright.setPrefWidth(400);
+        hboxright.setPrefHeight(54);
+        hboxright.getChildren().addAll(amountPane, add);
+
+
+
+        if (promptsObject == null || promptsObject.length == 0) {
+            nocharacterspane = new FlowPane();
+            nocharacters = new Label("no prompts found ☹\uFE0F");
+            nocharacters.setAlignment(Pos.CENTER);
+            nocharacterspane.setAlignment(Pos.CENTER);
+            nocharacterspane.setPrefHeight(1167);
+            nocharacterspane.setPrefWidth(568);
+            nocharacterspane.getChildren().add(nocharacters);
+            imagesVbox.getChildren().addAll(hboxright, nocharacterspane);
+
+            teiler.getChildren().add(imagesVbox);
+
+        } else {
+            amountText = new Text(promptsObject.length + " prompts added to viewport");
+            amountPane.getChildren().add(amountText);
+
+            amountPane.setPrefHeight(92);
+            amountPane.setPrefWidth(924);
+            amountText.setFont(new Font(14));
+
+            ScrollPane scrollPane = new ScrollPane();
+            scrollPane.setPrefHeight(700);
+            scrollPane.setPrefWidth(982);
+            scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+
+            imagesGrid = new GridPane();
+            scrollPane.setContent(imagesGrid);
+
+            imagesGrid.setPrefHeight(700);
+            imagesGrid.setPrefWidth(982);
+            imagesGrid.setHgap(20);
+            imagesGrid.setVgap(20);
+            hboxright.setPadding( new Insets(12, 0, 0, 0));
+            hboxright.setPrefWidth(400);
+            hboxright.setPrefHeight(54);
+
+            imagesVbox.getChildren().addAll(hboxright, scrollPane);
+            teiler.getChildren().add(imagesVbox);
+
+
+
+            int row = 0;
+            int column = 0;
+            for (Prompt coll : promptsObject) {
+                ImageView profilePicture = new ImageView(coll.getProfilePicture());
+                profilePicture.setFitHeight(300);
+                profilePicture.setFitWidth(300);
+
+                Label posPrompt = new Label(coll.getPosPrompt());
+                posPrompt.setTextFill(Color.WHITE);
+
+
+                Rectangle overlay = new Rectangle(300, 300, Color.color(0, 0, 0, 0.5));
+
+                StackPane stackPane = new StackPane();
+                stackPane.getChildren().addAll(profilePicture, overlay, posPrompt);
+
+                imagesGrid.add(stackPane, column, row); // Add to the calculated cell of the grid
+
+                // Update row and column for next collection
+                column++;
+                if (column > 2) { // If column is more than 2, reset it to 0 and increase row by 1
+                    column = 0;
+                    row++;
+                }
+            }
+
+            imagesVbox.getChildren().add(imagesGrid);
+        }
         Scene scene = new Scene(teiler, 1200, 800);
-        primaryStage.setResizable(false);
+        stage.setResizable(false);
 
-        primaryStage.setScene(scene);
+        stage.setScene(scene);
 
-        primaryStage.setTitle("Diffusion Depot");
-        primaryStage.show();
+        stage.setTitle("Diffusion Depot");
+        stage.show();
 
 
     }

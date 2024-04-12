@@ -29,13 +29,16 @@ public class SettingsScene extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-
-    File imagepath = null;
-    public SettingsScene() {
+    File selectedDirectory;
+    File imagepath;
+    Stage stage;
+    public SettingsScene(Stage stage) throws IOException {
+        imagepath = ConfigReader.returnImagePath();
+        this.stage = stage;
     }
 
     @Override
-    public void start(Stage stage) {
+    public void start(Stage primarystage) {
         VBox main = new VBox();
         FlowPane headerpane = new FlowPane();
         headerpane.setAlignment(Pos.CENTER);
@@ -52,19 +55,20 @@ public class SettingsScene extends Application {
 
 
 
-        Text path = new Text("Change folder path: ");
+        Text path = new Text("Folder path: ");
         TextField inputpath = new TextField();
         inputpath.setPrefHeight(26);
         inputpath.setPrefWidth(250);
         inputpath.setText(imagepath.getAbsolutePath());
 
         Button inputButton = new Button("+");
+
         inputButton.setPrefHeight(26);
         inputButton.setPrefWidth(26);
         inputButton.setOnAction(e -> {
             DirectoryChooser directoryChooser = new DirectoryChooser();
             directoryChooser.setTitle("Select Folder");
-            File selectedDirectory = directoryChooser.showDialog(stage);
+            selectedDirectory = directoryChooser.showDialog(stage);
             if (selectedDirectory != null) {
                 inputpath.setText(selectedDirectory.getAbsolutePath());
             }
@@ -99,29 +103,35 @@ public class SettingsScene extends Application {
         settings.setHgap(10);
 
         apply.setOnAction(e -> {
-            // Speichern Sie den aktualisierten Pfad in der Konfigurationsdatei
+            if(selectedDirectory == null) {
+                primarystage.close();
+            }
             try {
-                ConfigReader.writeImagePath(imagepath.getAbsolutePath());
+                if(imagepath.getAbsolutePath().equals(selectedDirectory.getAbsolutePath())) {
+                    primarystage.close();
+                }
+            } catch (NullPointerException ex) {
+                throw new NullPointerException("no changes made");
+            }
+
+
+
+            try {
+                ConfigReader.writeImagePath(selectedDirectory.getAbsolutePath());
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
-            //reload gallery with new path
-            GalleryScene gallery = null;
-            try {
-                gallery = new GalleryScene();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-            gallery.start(stage);
-            stage.close();
+
+            primarystage.close();
+
         });
 
         main.getChildren().addAll(headerpane, settings, applypane);
 
-        stage.setResizable(false);
+        primarystage.setResizable(false);
 
-        stage.setTitle("Settings");
+        primarystage.setTitle("Settings");
         Scene scene = new Scene(main, 600, 400);
-        stage.setScene(scene);
+        primarystage.setScene(scene);
     }
 }

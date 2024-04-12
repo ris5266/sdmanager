@@ -11,12 +11,12 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Set;
+import java.awt.Desktop;
 
 public class ImagesScene extends Application {
 
@@ -43,6 +44,8 @@ public class ImagesScene extends Application {
     private int imageamout;
     private Text amountText;
     private Stage primaryStage;
+    private String positivePrompt;
+    private String negativePrompt;
 
 
     public ImagesScene() throws IOException {
@@ -52,7 +55,7 @@ public class ImagesScene extends Application {
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        // teilter teilt in linke und rechte hölfte
+        // teilter teilt in linke und rechte hälfte
         HBox teiler = new HBox();
         teiler.setPrefHeight(800);
         teiler.setPrefWidth(1200);
@@ -122,7 +125,12 @@ public class ImagesScene extends Application {
         });
 
         prompts.setOnAction(e -> {
-            PromptsScene promptsScene = new PromptsScene();
+            PromptsScene promptsScene = null;
+            try {
+                promptsScene = new PromptsScene();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
             promptsScene.start(primaryStage);
         });
 
@@ -183,7 +191,12 @@ public class ImagesScene extends Application {
         teiler.getChildren().add(imagesVbox);
 
         settings.setOnAction(e -> {
-            SettingsScene settingsScene = new SettingsScene();
+            SettingsScene settingsScene = null;
+            try {
+                settingsScene = new SettingsScene(primaryStage);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
 
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
@@ -251,22 +264,17 @@ public class ImagesScene extends Application {
 
 
 
-                        // Create a semi-transparent Rectangle and a Label
+
                         Rectangle overlay = new Rectangle(300, 300, Color.color(0, 0, 0, 0.5));
                         Label overlayText = new Label();
                         Metadata metadata = ImageMetadataReader.readMetadata(files[i]);
 
                         StringBuilder output = new StringBuilder();
 
-
-
                         System.out.println(overlayText.getText());
-
-
 
                         overlayText.setMaxWidth(pictures.getFitWidth());
                         overlayText.setTextFill(Color.WHITE);
-
 
                         // Initially hide the overlay and the text
                         overlay.setVisible(false);
@@ -276,50 +284,99 @@ public class ImagesScene extends Application {
                         StackPane stackPane = new StackPane();
                         stackPane.getChildren().addAll(pictures, overlay, overlayText);
 
+
+
 // Add an EventHandler to the ImageView
                         stackPane.setOnMouseClicked(event -> {
-                            // Toggle the visibility of the overlay and the text
-                            boolean isVisible = overlay.isVisible();
-                            overlay.setVisible(!isVisible);
-                            overlayText.setVisible(!isVisible);
+                            if (event.getButton() == MouseButton.PRIMARY) {
+                                // Toggle the visibility of the overlay and the text
+                                boolean isVisible = overlay.isVisible();
+                                overlay.setVisible(!isVisible);
+                                overlayText.setVisible(!isVisible);
 
-                            if (overlay.isVisible()) {
-                                output.setLength(0);
-                                for (Directory directory : metadata.getDirectories()) {
-                                    if (directory.getTags().toArray()[0].toString().contains("Image Width")) {
-                                        output.append("Image Width: " + directory.getTags().toArray()[0].toString().split("- ")[1] + "\n");
-                                        output.append("Image Height: " + directory.getTags().toArray()[1].toString().split("- ")[1] + "\n");
-                                        output.append("\n");
+                                if (overlay.isVisible()) {
+                                    output.setLength(0);
+                                    for (Directory directory : metadata.getDirectories()) {
+                                        if (directory.getTags().toArray()[0].toString().contains("Image Width")) {
+                                            output.append("Image Width: " + directory.getTags().toArray()[0].toString().split("- ")[1] + "\n");
+                                            output.append("Image Height: " + directory.getTags().toArray()[1].toString().split("- ")[1] + "\n");
+                                            output.append("\n");
+                                        }
+                                        if (directory.getTags().toArray()[0].toString().contains("prompt")) {
+                                            String prompt = directory.getTags().toArray()[0].toString();
+                                            System.out.println(prompt);
+
+
+                                            output.append("Prompt: " + prompt.split("parameters: ")[1].split("Negative prompt")[0]);
+                                            positivePrompt = prompt.split("parameters: ")[1].split("Negative prompt")[0];
+
+                                            prompt = prompt.split("parameters: ")[1];
+                                            output.append("Negative prompt: " + prompt.split("Negative prompt: ")[1].split("Steps:")[0] + "\n");
+                                            negativePrompt = prompt.split("Negative prompt: ")[1].split("Steps:")[0];
+                                            prompt = prompt.split("Negative prompt: ")[1];
+                                            output.append("Steps: " + prompt.split("Steps: ")[1].split(", Sampler")[0] + "\n");
+                                            output.append("Sampler: " + prompt.split(", Sampler: ")[1].split(", CFG scale")[0] + "\n");
+                                            prompt = prompt.split(", Sampler: ")[1];
+                                            output.append("CFG scale: " + prompt.split("CFG scale: ")[1].split(", Seed")[0] + "\n");
+                                            prompt = prompt.split("CFG scale: ")[1];
+
+                                            prompt = prompt.split("Seed: ")[1];
+                                            output.append("Seed: " + prompt.split(", Face restoration")[0] + "\n");
+                                            output.append("Face Restoration: " + prompt.split("Face restoration: ")[1].split(", Size: ")[0] + "\n");
+                                            prompt = prompt.split("Model: ")[1];
+                                            output.append("Model: " + prompt.split(", Clip skip: ")[0] + "\n");
+                                            prompt = prompt.split("Clip skip: ")[1];
+                                            output.append("Clip Skip: " + prompt.split(", Version: ")[0] + "\n");
+                                        }
+
                                     }
-                                    if (directory.getTags().toArray()[0].toString().contains("prompt")) {
-                                        String prompt = directory.getTags().toArray()[0].toString();
-                                        System.out.println(prompt);
-
-
-                                        output.append("Prompt: " + prompt.split("parameters: ")[1].split("Negative prompt")[0]);
-                                        prompt = prompt.split("parameters: ")[1];
-                                        output.append("Negative prompt: " + prompt.split("Negative prompt: ")[1].split("Steps:")[0] + "\n");
-                                        prompt = prompt.split("Negative prompt: ")[1];
-                                        output.append("Steps: " + prompt.split("Steps: ")[1].split(", Sampler")[0] + "\n");
-                                        output.append("Sampler: " + prompt.split(", Sampler: ")[1].split(", CFG scale")[0] + "\n");
-                                        prompt = prompt.split(", Sampler: ")[1];
-                                        output.append("CFG scale: " + prompt.split("CFG scale: ")[1].split(", Seed")[0] + "\n");
-                                        prompt = prompt.split("CFG scale: ")[1];
-
-                                        prompt = prompt.split("Seed: ")[1];
-                                        output.append("Seed: " + prompt.split(", Face restoration")[0] + "\n");
-                                        output.append("Face Restoration: " + prompt.split("Face restoration: ")[1].split(", Size: ")[0] + "\n");
-                                        prompt = prompt.split("Model: ")[1];
-                                        output.append("Model: " + prompt.split(", Clip skip: ")[0] + "\n");
-                                        prompt = prompt.split("Clip skip: ")[1];
-                                        output.append("Clip Skip: " + prompt.split(", Version: ")[0] + "\n");
-                                    }
-
+                                    overlayText.setText(output.toString());
+                                } else {
+                                    overlayText.setText("");
                                 }
-                                overlayText.setText(output.toString());
-                            } else {
-                                overlayText.setText("");
                             }
+                        });
+
+
+                        // Create a ContextMenu
+                        ContextMenu contextMenu = new ContextMenu();
+
+                        // Create a MenuItem for copying the prompt
+                        MenuItem copyPosPromptItem = new MenuItem("Copy Positive Prompt");
+                        copyPosPromptItem.setOnAction(event -> {
+                            Clipboard clipboard = Clipboard.getSystemClipboard();
+                            ClipboardContent content = new ClipboardContent();
+                            content.putString(positivePrompt);
+                            clipboard.setContent(content);
+                        });
+
+                        MenuItem copyNegPromptItem = new MenuItem("Copy Negative Prompt");
+                        copyNegPromptItem.setOnAction(event -> {
+                            Clipboard clipboard = Clipboard.getSystemClipboard();
+                            ClipboardContent content = new ClipboardContent();
+                            content.putString(negativePrompt);
+                            clipboard.setContent(content);
+                        });
+
+                        // Create a MenuItem for opening the image
+                        MenuItem openImageItem = new MenuItem("Open Image");
+                        final File file = files[i];
+                        openImageItem.setOnAction(event -> {
+                            if (Desktop.isDesktopSupported()) {
+                                try {
+                                    Desktop.getDesktop().open(file);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+
+                        // Add the MenuItems to the ContextMenu
+                        contextMenu.getItems().addAll(openImageItem, copyPosPromptItem, copyNegPromptItem);
+
+                        // Add the ContextMenu to the StackPane
+                        stackPane.setOnContextMenuRequested(event -> {
+                            contextMenu.show(stackPane, event.getScreenX(), event.getScreenY());
                         });
 
 

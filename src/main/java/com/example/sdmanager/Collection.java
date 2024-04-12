@@ -11,12 +11,12 @@ import java.util.List;
 public class Collection {
     private String name;
     private String profilePicture;
-    private String images;
+    private String imagefolderpath;
 
-    public Collection(String name, String profilePicture, String images) {
+    public Collection(String name, String profilePicture, String imagefolderpath) {
         this.name = name;
         this.profilePicture = profilePicture;
-        this.images = images;
+        this.imagefolderpath = imagefolderpath;
     }
 
 
@@ -33,16 +33,16 @@ public class Collection {
         return profilePicture;
     }
 
-    public String getImages() {
-        return images;
+    public String getImageFolderPath() {
+        return imagefolderpath;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setImages(String images) {
-        this.images = images;
+    public void setImageFolderPath(String imagefolderpath) {
+        this.imagefolderpath = imagefolderpath;
     }
 
     public void setName(String name) {
