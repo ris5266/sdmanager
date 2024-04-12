@@ -128,7 +128,12 @@ public class PromptsScene extends Application {
         });
 
         images.setOnAction(e -> {
-            ImagesScene imagesScene = new ImagesScene();
+            ImagesScene imagesScene = null;
+            try {
+                imagesScene = new ImagesScene();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
             imagesScene.start(primaryStage);
         });
 

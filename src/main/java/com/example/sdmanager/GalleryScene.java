@@ -39,6 +39,7 @@ public class GalleryScene extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
     File imagepath;
 
     GridPane imagesGrid;
@@ -130,7 +131,12 @@ public class GalleryScene extends Application {
         });
 
         images.setOnAction(e -> {
-            ImagesScene imageScene = new ImagesScene();
+            ImagesScene imageScene = null;
+            try {
+                imageScene = new ImagesScene();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
             imageScene.start(primaryStage);
         });
 
@@ -275,9 +281,7 @@ public class GalleryScene extends Application {
     }
 
     public void load() {
-
         // txt file laden
-
         if(characteramount == 0) {
             nocharacterspane = new FlowPane();
             nocharacters = new Label("no collections found ☹\uFE0F");

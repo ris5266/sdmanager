@@ -39,13 +39,14 @@ public class ImagesScene extends Application {
 
     private ImageView pictures;
     private GridPane imagesGrid;
-    private File imagepath = null;
+    private File imagepath;
     private int imageamout;
     private Text amountText;
     private Stage primaryStage;
 
 
-    public ImagesScene() {
+    public ImagesScene() throws IOException {
+        imagepath = ConfigReader.returnImagePath();
     }
 
     @Override
