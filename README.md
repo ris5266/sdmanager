@@ -1,6 +1,6 @@
 <div align="center">
 
-  <img src="https://github.com/ris5266/sdmanager/blob/main/src/main/resources/icon.jpg" alt="logo" width="450px" height="450px"/>
+  <img src="https://github.com/ris5266/sdmanager/blob/main/src/main/resources/icon.jpg" alt="logo" width="500px" height="500px"/>
   
 # Stable Diffusion Image Manager
 </div>
