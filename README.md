@@ -17,3 +17,14 @@
   ---
 
 </div>
+
+## Features
+
+📁 **Organized**: Select your SD output folder and view all your generated images at once.
+
+🔍 **Metadata**: Easily access all the important generating information of any image within the software.
+
+📂 **Collections**: Create collections to organize subcategories of your images efficiently.
+
+📝 **Prompts**: Save important prompts to quickly copy them if needed.
+
