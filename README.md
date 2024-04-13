@@ -1,11 +1,11 @@
 <div align="center">
 
-  <img src="https://github.com/ris5266/sdmanager/blob/main/src/main/resources/icon.jpg" alt="logo" width="180px" height="180px"/>
+  <img src="https://github.com/ris5266/sdmanager/blob/main/src/main/resources/icon.jpg" alt="logo" width="450px" height="450px"/>
   
 # Stable Diffusion Image Manager
 </div>
 
-### A Stable Diffusion Image Manager built for images created with the [Stable Diffusion Web UI](https://github.com/AUTOMATIC1111/stable-diffusion-webui)
+### A Stable Diffusion Image Manager built for images created with the [SD Web UI](https://github.com/AUTOMATIC1111/stable-diffusion-webui)
 
 > still under development
 
