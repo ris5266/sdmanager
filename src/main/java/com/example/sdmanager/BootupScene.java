@@ -6,8 +6,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -49,15 +53,35 @@ public class BootupScene extends Application {
         submitVbox = new VBox();
         path = new TextField();
         inputButton = new Button("+");
+        inputButton.setStyle("-fx-background-color: white");
         inputField = new GridPane();
         submit = new Button("Submit");
 
 
 
-        welcome = new Text("Welcome");
-        tutorial = new Text("please select your sd output folder:");
+        Image icon = new Image("icon.jpg");
+        ImageView iconView = new ImageView(icon);
+        iconView.setFitHeight(150);
+        iconView.setFitWidth(150);
+        Text title = new Text("Diffusion Depot");
+        title.setFill(Color.WHITE);
+        title.setStyle("-fx-font-size: 30px");
+        title.setFont(Font.font("Verdana", FontWeight.BOLD, 20));
 
+
+
+        tutorial = new Text("please select your sd output folder:");
+        submit.setStyle("-fx-background-color: #white");
         submit.setDisable(true);
+        path.setEditable(false);
+        submit.setOnMouseEntered(e -> {
+            submit.setStyle("-fx-background-color: #b6b6b6");
+        });
+        submit.setOnMouseExited(e -> {
+            submit.setStyle("-fx-background-color: #white");
+        });
+
+        tutorial.setFill(Color.WHITE);
 
         DirectoryChooser directorychooser = new DirectoryChooser();
         inputButton.setOnAction(e -> {
@@ -99,7 +123,7 @@ public class BootupScene extends Application {
         submitVbox.setAlignment(Pos.CENTER);
 
         // layouts kombinieren
-        vbox.getChildren().addAll(welcome, tutorial);
+        vbox.getChildren().addAll(title, iconView, tutorial);
         vbox.setAlignment(Pos.CENTER);
         vbox.setSpacing(3);
 
@@ -113,9 +137,14 @@ public class BootupScene extends Application {
 
 
         scene = new Scene(mainVbox, 800, 600);
+        pane.setStyle("-fx-background-color: #744237");
+        vbox.setStyle("-fx-background-color: #744237");
+        mainVbox.setStyle("-fx-background-color: #744237");
+
         stage.setTitle("sdmanager");
         stage.getIcons().add(new Image("icon.jpg"));
         stage.setScene(scene);
+
         stage.show();
     }
 

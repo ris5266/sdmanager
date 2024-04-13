@@ -107,7 +107,7 @@ public class GalleryScene extends Application {
         imagesButton.setStyle("-fx-background-color: white");
 
         imagesButton.setOnMouseEntered(e -> {
-            imagesButton.setStyle("-fx-background-color: #f2ce6b");
+            imagesButton.setStyle("-fx-background-color: #e98c78");
         });
 
         imagesButton.setOnMouseExited(e -> {
@@ -115,7 +115,7 @@ public class GalleryScene extends Application {
         });
 
         profilePictureButton.setOnMouseEntered(e -> {
-            profilePictureButton.setStyle("-fx-background-color: #f2ce6b");
+            profilePictureButton.setStyle("-fx-background-color: #e98c78");
         });
 
         profilePictureButton.setOnMouseExited(e -> {
@@ -140,14 +140,14 @@ public class GalleryScene extends Application {
         profilePictureInput.setEditable(false);
         imagesInput.setEditable(false);
         Button submit = new Button("Create Collection");
-        submit.setStyle("-fx-background-color: #ffbe0b");
+        submit.setStyle("-fx-background-color: #cc7a68");
 
         submit.setOnMouseEntered(e -> {
-            submit.setStyle("-fx-background-color: #f2ce6b");
+            submit.setStyle("-fx-background-color: #e98c78");
         });
 
         submit.setOnMouseExited(e -> {
-            submit.setStyle("-fx-background-color: #ffbe0b");
+            submit.setStyle("-fx-background-color: #cc7a68");
         });
 
         submit.setOnAction(e -> {
@@ -269,36 +269,36 @@ public class GalleryScene extends Application {
         prompts.setPrefWidth(201);
 
         Button add = new Button("Add");
-        add.setStyle("-fx-background-color: #ffbe0b");
+        add.setStyle("-fx-background-color: #cc7a68");
         add.setPrefWidth(70);
         add.setPrefHeight(26);
 
         add.setOnMouseEntered(e -> {
-            add.setStyle("-fx-background-color: #f2c035");
+            add.setStyle("-fx-background-color: #e98c78");
         });
         add.setOnMouseExited(e -> {
-            add.setStyle("-fx-background-color: #ffbe0b");
+            add.setStyle("-fx-background-color: #cc7a68");
         });
 
         add.setOnAction(e -> {
             createCollectionModal();
         });
 
-        home.setStyle("-fx-background-color: #ffbe0b");
+        home.setStyle("-fx-background-color: #cc7a68");
         images.setStyle("-fx-background-color: white");
         prompts.setStyle("-fx-background-color: white");
 
 
 
         images.setOnMouseEntered(e -> {
-            images.setStyle("-fx-background-color: #f2ce6b");
+            images.setStyle("-fx-background-color: #e98c78");
         });
         images.setOnMouseExited(e -> {
             images.setStyle("-fx-background-color: white");
         });
 
         prompts.setOnMouseEntered(e -> {
-            prompts.setStyle("-fx-background-color: #f2ce6b");
+            prompts.setStyle("-fx-background-color: #e98c78");
         });
         prompts.setOnMouseExited(e -> {
             prompts.setStyle("-fx-background-color: white");
@@ -337,7 +337,7 @@ public class GalleryScene extends Application {
         settings.setPrefWidth(201);
 
         settings.setOnMouseEntered(e -> {
-            settings.setStyle("-fx-background-color: #f2ce6b");
+            settings.setStyle("-fx-background-color: #e98c78");
         });
         settings.setOnMouseExited(e -> {
             settings.setStyle("-fx-background-color: white");

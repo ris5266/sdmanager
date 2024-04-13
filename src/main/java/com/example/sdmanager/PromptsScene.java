@@ -110,24 +110,9 @@ public class PromptsScene extends Application {
         negPrompt.setStyle("-fx-background-color: white");
 
 
-        posPrompt.setOnMouseEntered(e -> {
-            posPrompt.setStyle("-fx-background-color: #f2ce6b");
-        });
-
-        posPrompt.setOnMouseExited(e -> {
-            posPrompt.setStyle("-fx-background-color: white");
-        });
-
-        negPrompt.setOnMouseEntered(e -> {
-            negPrompt.setStyle("-fx-background-color: #f2ce6b");
-        });
-
-        negPrompt.setOnMouseExited(e -> {
-            negPrompt.setStyle("-fx-background-color: white");
-        });
 
         profilePictureButton.setOnMouseEntered(e -> {
-            profilePictureButton.setStyle("-fx-background-color: #f2ce6b");
+            profilePictureButton.setStyle("-fx-background-color: #e98c78");
         });
 
         profilePictureButton.setOnMouseExited(e -> {
@@ -136,14 +121,14 @@ public class PromptsScene extends Application {
         );
 
         Button submit = new Button("Create Prompt");
-        submit.setStyle("-fx-background-color: #ffbe0b");
+        submit.setStyle("-fx-background-color: #cc7a68");
 
         submit.setOnMouseEntered(e -> {
-            submit.setStyle("-fx-background-color: #f2ce6b");
+            submit.setStyle("-fx-background-color: #e98c78");
         });
 
         submit.setOnMouseExited(e -> {
-            submit.setStyle("-fx-background-color: #ffbe0b");
+            submit.setStyle("-fx-background-color: #cc7a68");
         });
 
         submit.setOnAction(e -> {
@@ -260,15 +245,15 @@ public class PromptsScene extends Application {
         prompts.setPrefWidth(201);
 
         Button add = new Button("Add");
-        add.setStyle("-fx-background-color: #ffbe0b");
+        add.setStyle("-fx-background-color: #cc7a68");
         add.setPrefWidth(70);
         add.setPrefHeight(26);
 
         add.setOnMouseEntered(e -> {
-            add.setStyle("-fx-background-color: #f2c035");
+            add.setStyle("-fx-background-color: #e98c78");
         });
         add.setOnMouseExited(e -> {
-            add.setStyle("-fx-background-color: #ffbe0b");
+            add.setStyle("-fx-background-color: #cc7a68");
         });
 
         add.setOnAction(e -> {
@@ -277,10 +262,10 @@ public class PromptsScene extends Application {
 
         home.setStyle("-fx-background-color: white");
         images.setStyle("-fx-background-color: white");
-        prompts.setStyle("-fx-background-color: #ffbe0b");
+        prompts.setStyle("-fx-background-color: #cc7a68");
 
         home.setOnMouseEntered(e -> {
-            home.setStyle("-fx-background-color: #f2ce6b");
+            home.setStyle("-fx-background-color: #e98c78");
         });
         home.setOnMouseExited(e -> {
             home.setStyle("-fx-background-color: white");
@@ -288,7 +273,7 @@ public class PromptsScene extends Application {
         });
 
         images.setOnMouseEntered(e -> {
-            images.setStyle("-fx-background-color: #f2ce6b");
+            images.setStyle("-fx-background-color: #e98c78");
         });
         images.setOnMouseExited(e -> {
             images.setStyle("-fx-background-color: white");
@@ -329,7 +314,7 @@ public class PromptsScene extends Application {
         settings.setPrefWidth(201);
 
         settings.setOnMouseEntered(e -> {
-            settings.setStyle("-fx-background-color: #f2ce6b");
+            settings.setStyle("-fx-background-color: #e98c78");
         });
         settings.setOnMouseExited(e -> {
             settings.setStyle("-fx-background-color: white");

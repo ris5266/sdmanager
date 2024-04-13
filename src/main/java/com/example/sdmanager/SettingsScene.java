@@ -86,7 +86,7 @@ public class SettingsScene extends Application {
 
         FlowPane applypane = new FlowPane();
         Button apply = new Button("Apply");
-        apply.setStyle("-fx-background-color: #ffbe0b");
+        apply.setStyle("-fx-background-color: #cc7a68");
         applypane.setAlignment(Pos.BOTTOM_CENTER);
         applypane.setPrefWidth(602);
         applypane.setPrefHeight(532);
@@ -94,10 +94,10 @@ public class SettingsScene extends Application {
         applypane.setPadding(new Insets(0, 0, 10, 0));
 
         apply.setOnMouseEntered(e -> {
-            apply.setStyle("-fx-background-color: #f2ce6b");
+            apply.setStyle("-fx-background-color: #e98c78");
         });
         apply.setOnMouseExited(e -> {
-            apply.setStyle("-fx-background-color: #ffbe0b");
+            apply.setStyle("-fx-background-color: #cc7a68");
 
         });
 

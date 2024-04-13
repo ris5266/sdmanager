@@ -100,11 +100,11 @@ public class ImagesScene extends Application {
         prompts.setPrefWidth(201);
 
         home.setStyle("-fx-background-color: white");
-        images.setStyle("-fx-background-color: #ffbe0b");
+        images.setStyle("-fx-background-color: #cc7a68");
         prompts.setStyle("-fx-background-color: white");
 
         home.setOnMouseEntered(e -> {
-            home.setStyle("-fx-background-color: #f2ce6b");
+            home.setStyle("-fx-background-color: #e98c78");
         });
         home.setOnMouseExited(e -> {
             home.setStyle("-fx-background-color: white");
@@ -113,7 +113,7 @@ public class ImagesScene extends Application {
 
 
         prompts.setOnMouseEntered(e -> {
-            prompts.setStyle("-fx-background-color: #f2ce6b");
+            prompts.setStyle("-fx-background-color: #e98c78");
         });
         prompts.setOnMouseExited(e -> {
             prompts.setStyle("-fx-background-color: white");
@@ -150,7 +150,7 @@ public class ImagesScene extends Application {
         settings.setPrefWidth(201);
 
         settings.setOnMouseEntered(e -> {
-            settings.setStyle("-fx-background-color: #f2ce6b");
+            settings.setStyle("-fx-background-color: #e98c78");
         });
         settings.setOnMouseExited(e -> {
             settings.setStyle("-fx-background-color: white");
