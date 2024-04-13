@@ -12,7 +12,7 @@
 <div align="center">
 
   ---
-  [**Features**](#features) | [**Installation**](#installation) | [**Updates**](#Updates)
+  [**Features**](#features) | [**Installation**](#installation) | [**Upcoming**](#upcoming)
 
   ---
 
