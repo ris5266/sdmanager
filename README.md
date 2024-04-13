@@ -4,7 +4,9 @@
   
 # Stable Diffusion Image Manager
 </div>
+
 ### A Stable Diffusion Image Manager built for images created with the [Stable Diffusion Web UI](https://github.com/AUTOMATIC1111/stable-diffusion-webui)
+
 > still under development
 
 <div align="center">
