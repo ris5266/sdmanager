@@ -494,6 +494,7 @@ public class GalleryScene extends Application {
         }
         Scene scene = new Scene(teiler, 1200, 800);
         stage.setResizable(false);
+        stage.getIcons().add(new Image("icon.jpg"));
 
         stage.setScene(scene);
 

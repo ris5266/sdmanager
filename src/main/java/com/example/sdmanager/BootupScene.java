@@ -114,6 +114,7 @@ public class BootupScene extends Application {
 
         scene = new Scene(mainVbox, 800, 600);
         stage.setTitle("sdmanager");
+        stage.getIcons().add(new Image("icon.jpg"));
         stage.setScene(scene);
         stage.show();
     }

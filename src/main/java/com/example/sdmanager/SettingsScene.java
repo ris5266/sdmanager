@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -133,6 +134,13 @@ public class SettingsScene extends Application {
             }
 
             primarystage.close();
+            ImagesScene imagesScene = null;
+            try {
+                imagesScene = new ImagesScene();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            imagesScene.start(stage);
 
         });
 
@@ -141,6 +149,8 @@ public class SettingsScene extends Application {
         primarystage.setResizable(false);
 
         primarystage.setTitle("Settings");
+        primarystage.getIcons().add(new Image("icon.jpg"));
+
         Scene scene = new Scene(main, 600, 400);
         primarystage.setScene(scene);
     }

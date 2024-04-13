@@ -65,7 +65,7 @@ public class CollectionInsideScene extends Application {
         amountText = new Text(imageamout + " images added to collection");
         amountPane.getChildren().add(amountText);
         amountPane.setMargin(amountText, new Insets(7, 0, 0, 5));
-        amountPane.setPrefHeight(35);
+        amountPane.setPrefHeight(20);
         amountPane.setPrefWidth(400);
         amountText.setFont(new Font(14));
 
@@ -99,6 +99,8 @@ public class CollectionInsideScene extends Application {
         primaryStage.setScene(scene);
 
         primaryStage.setTitle("Diffusion Depot");
+        primaryStage.getIcons().add(new Image("icon.jpg"));
+
         primaryStage.show();
     }
 
@@ -171,8 +173,6 @@ public class CollectionInsideScene extends Application {
                         // Create a StackPane to hold the ImageView, Rectangle and Label
                         StackPane stackPane = new StackPane();
                         stackPane.getChildren().addAll(pictures, overlay, overlayText);
-
-
 
 // Add an EventHandler to the ImageView
                         stackPane.setOnMouseClicked(event -> {

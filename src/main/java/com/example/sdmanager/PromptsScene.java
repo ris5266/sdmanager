@@ -430,10 +430,24 @@ public class PromptsScene extends Application {
 
                 Rectangle overlay = new Rectangle(300, 300, Color.color(0, 0, 0, 0.45));
 
+                overlay.setOpacity(0);
+                posPrompt.setOpacity(0);
+
+
                 StackPane stackPane = new StackPane();
                 stackPane.getChildren().addAll(profilePicture, overlay, posPrompt);
 
+                // When the mouse enters the image area, set the opacity of the overlay and the prompt text back to its original value
+                stackPane.setOnMouseEntered(event -> {
+                    overlay.setOpacity(0.8);
+                    posPrompt.setOpacity(1);
+                });
 
+                // When the mouse exits the image area, set the opacity of the overlay and the prompt text to 0
+                stackPane.setOnMouseExited(event -> {
+                    overlay.setOpacity(0);
+                    posPrompt.setOpacity(0);
+                });
 
                 // Create context menu
                 ContextMenu contextMenu = new ContextMenu();
