@@ -42,14 +42,14 @@ public class ConfigReader {
             collectionInfo = new JSONObject();
         }
 
-        int nextKey = collectionInfo.length() + 1;
+        long nextKey = System.currentTimeMillis();
 
         JSONObject newCollectionInfo = new JSONObject();
         newCollectionInfo.put("name", collection.getName());
         newCollectionInfo.put("profilePicture", collection.getProfilePicture());
         newCollectionInfo.put("imagefolderpath", collection.getImageFolderPath());
 
-        collectionInfo.put(Integer.toString(nextKey), newCollectionInfo);
+        collectionInfo.put(Long.toString(nextKey), newCollectionInfo);
         jsonObject.put("collectionInformation", collectionInfo);
 
         Files.write(Paths.get("config.json"), jsonObject.toString().getBytes(StandardCharsets.UTF_8));
@@ -102,15 +102,57 @@ public class ConfigReader {
             promptInfo = new JSONObject();
         }
 
-        int nextKey = promptInfo.length() + 1;
+        long nextKey = System.currentTimeMillis();
 
         JSONObject newPromptInfo = new JSONObject();
-        newPromptInfo.put("negativePrompt", prompt.getNegPrompt());
         newPromptInfo.put("positivePrompt", prompt.getPosPrompt());
+        newPromptInfo.put("negativePrompt", prompt.getNegPrompt());
         newPromptInfo.put("profilePicture", prompt.getProfilePicture());
 
-        promptInfo.put(Integer.toString(nextKey), newPromptInfo);
+        promptInfo.put(Long.toString(nextKey), newPromptInfo);
         jsonObject.put("promptInformation", promptInfo);
+
+        Files.write(Paths.get("config.json"), jsonObject.toString().getBytes(StandardCharsets.UTF_8));
+    }
+
+    public static void deletePromptInformation(Prompt promptToDelete) throws IOException {
+        String content = new String(Files.readAllBytes(Paths.get("config.json")), StandardCharsets.UTF_8);
+        JSONObject jsonObject = new JSONObject(content);
+
+        JSONObject promptInfo = jsonObject.getJSONObject("promptInformation");
+
+        for (String key : promptInfo.keySet()) {
+            JSONObject prompt = promptInfo.getJSONObject(key);
+            if (prompt.getString("positivePrompt").equals(promptToDelete.getPosPrompt()) &&
+                    prompt.getString("negativePrompt").equals(promptToDelete.getNegPrompt()) &&
+                    prompt.getString("profilePicture").equals(promptToDelete.getProfilePicture())) {
+                promptInfo.remove(key);
+                break;
+            }
+        }
+
+        jsonObject.put("promptInformation", promptInfo);
+
+        Files.write(Paths.get("config.json"), jsonObject.toString().getBytes(StandardCharsets.UTF_8));
+    }
+
+    public static void deleteCollectionInformation(Collection collectionToDelete) throws IOException {
+        String content = new String(Files.readAllBytes(Paths.get("config.json")), StandardCharsets.UTF_8);
+        JSONObject jsonObject = new JSONObject(content);
+
+        JSONObject collectionInfo = jsonObject.getJSONObject("collectionInformation");
+
+        for (String key : collectionInfo.keySet()) {
+            JSONObject collection = collectionInfo.getJSONObject(key);
+            if (collection.getString("name").equals(collectionToDelete.getName()) &&
+                    collection.getString("profilePicture").equals(collectionToDelete.getProfilePicture()) &&
+                    collection.getString("imagefolderpath").equals(collectionToDelete.getImageFolderPath())) {
+                collectionInfo.remove(key);
+                break;
+            }
+        }
+
+        jsonObject.put("collectionInformation", collectionInfo);
 
         Files.write(Paths.get("config.json"), jsonObject.toString().getBytes(StandardCharsets.UTF_8));
     }

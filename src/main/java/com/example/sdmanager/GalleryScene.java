@@ -6,12 +6,10 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -50,6 +48,7 @@ public class GalleryScene extends Application {
     VBox imagesVbox;
     Label nocharacters;
     FlowPane nocharacterspane;
+    TextField searchinput;
 
     private Text amountText;
 
@@ -104,6 +103,32 @@ public class GalleryScene extends Application {
         TextField imagesInput = new TextField();
         imagesInput.setPromptText("Image Folder");
         Button imagesButton = new Button("Select Folder");
+
+        imagesButton.setStyle("-fx-background-color: white");
+
+        imagesButton.setOnMouseEntered(e -> {
+            imagesButton.setStyle("-fx-background-color: #f2ce6b");
+        });
+
+        imagesButton.setOnMouseExited(e -> {
+            imagesButton.setStyle("-fx-background-color: white");
+        });
+
+        profilePictureButton.setOnMouseEntered(e -> {
+            profilePictureButton.setStyle("-fx-background-color: #f2ce6b");
+        });
+
+        profilePictureButton.setOnMouseExited(e -> {
+            profilePictureButton.setStyle("-fx-background-color: white");
+                }
+        );
+
+
+
+
+        profilePictureButton.setStyle("-fx-background-color: white");
+
+
         imagesButton.setOnAction(e -> {
             DirectoryChooser directoryChooser = new DirectoryChooser();
             File directory = directoryChooser.showDialog(modal);
@@ -112,14 +137,27 @@ public class GalleryScene extends Application {
             }
         });
         imagesInputBox.getChildren().addAll(imagesInput, imagesButton);
-
+        profilePictureInput.setEditable(false);
+        imagesInput.setEditable(false);
         Button submit = new Button("Create Collection");
+        submit.setStyle("-fx-background-color: #ffbe0b");
+
+        submit.setOnMouseEntered(e -> {
+            submit.setStyle("-fx-background-color: #f2ce6b");
+        });
+
+        submit.setOnMouseExited(e -> {
+            submit.setStyle("-fx-background-color: #ffbe0b");
+        });
+
         submit.setOnAction(e -> {
             String name = nameInput.getText();
             String profilePictureUrl = profilePictureInput.getText();
             String imageUrls = imagesInput.getText();
 
-            if (!profilePictureUrl.isEmpty() && !imageUrls.isEmpty() && !name.isEmpty()) {
+            File imageDirectory = new File(imageUrls);
+
+            if (!profilePictureUrl.isEmpty() && !imageUrls.isEmpty() && !name.isEmpty() && profilePictureUrl.startsWith("file:/") && imageDirectory.isDirectory()) {
                 Collection collection = new Collection(name, profilePictureUrl, imageUrls);
                 try {
                     ConfigReader.writeCollectionInformations(collection);
@@ -127,13 +165,49 @@ public class GalleryScene extends Application {
                     throw new RuntimeException(ex);
                 }
                 modal.close();
+                try {
+                    GalleryScene galleryScene = new GalleryScene();
+                    galleryScene.start(stage);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             } else {
+                if(name.isEmpty()) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Invalid Input");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Collection Name must not be empty.");
+                    alert.showAndWait();
+                }
+                // Show an error message if the profile picture URL does not start with "file:/"
+                if (!profilePictureUrl.startsWith("file:/")) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Invalid Input");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Profile picture must contain a image from your computer.");
+                    alert.showAndWait();
+                }
+                // Show an error message if the imageUrls does not represent a valid directory
+                if (!imageDirectory.isDirectory()) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Invalid Input");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Image Folder must be a valid directory.");
+                    alert.showAndWait();
+                }
             }
         });
+        layout.setPadding(new Insets(10, 10, 10, 10));
+        layout.setSpacing(5);
+        Text title = new Text("Create Collection");
+        title.setFont(new Font(20));
+        layout.getChildren().add(title);
 
         layout.getChildren().addAll(nameInput, profilePictureInputBox, imagesInputBox, submit);
 
         modalScene = new Scene(layout);
+        modal.setResizable(false);
+
         modal.setScene(modalScene);
         modal.showAndWait();
     }
@@ -148,6 +222,7 @@ public class GalleryScene extends Application {
     }
 
     public void load() {
+
         // teilter teilt in linke und rechte hälfte
         teiler = new HBox();
         teiler.setPrefHeight(800);
@@ -171,9 +246,11 @@ public class GalleryScene extends Application {
         softwarepane.setPrefWidth(222);
 
         FlowPane inputpane = new FlowPane();
-        TextField searchinput = new TextField();
+        searchinput = new TextField();
         inputpane.setAlignment(Pos.CENTER);
+        searchinput.setDisable(true);
         inputpane.getChildren().add(searchinput);
+
         inputpane.setPrefWidth(201);
         inputpane.setPrefHeight(44);
 
@@ -207,27 +284,21 @@ public class GalleryScene extends Application {
             createCollectionModal();
         });
 
-        home.setStyle("-fx-background-color: white");
+        home.setStyle("-fx-background-color: #ffbe0b");
         images.setStyle("-fx-background-color: white");
         prompts.setStyle("-fx-background-color: white");
 
-        home.setOnMouseEntered(e -> {
-            home.setStyle("-fx-background-color: #ffbe0b");
-        });
-        home.setOnMouseExited(e -> {
-            home.setStyle("-fx-background-color: white");
 
-        });
 
         images.setOnMouseEntered(e -> {
-            images.setStyle("-fx-background-color: #ffbe0b");
+            images.setStyle("-fx-background-color: #f2ce6b");
         });
         images.setOnMouseExited(e -> {
             images.setStyle("-fx-background-color: white");
         });
 
         prompts.setOnMouseEntered(e -> {
-            prompts.setStyle("-fx-background-color: #ffbe0b");
+            prompts.setStyle("-fx-background-color: #f2ce6b");
         });
         prompts.setOnMouseExited(e -> {
             prompts.setStyle("-fx-background-color: white");
@@ -331,7 +402,9 @@ public class GalleryScene extends Application {
             scrollPane.setPrefHeight(700);
             scrollPane.setPrefWidth(982);
             scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-
+            scrollPane.setStyle("-fx-focus-color: transparent");
+            scrollPane.setStyle("-fx-faint-focus-color: transparent");
+            scrollPane.setStyle("-fx-background-color: transparent");
 
             imagesGrid = new GridPane();
             scrollPane.setContent(imagesGrid);
@@ -359,20 +432,63 @@ public class GalleryScene extends Application {
                 Label collectionName = new Label(coll.getName());
                 collectionName.setTextFill(Color.WHITE);
 
-                Rectangle overlay = new Rectangle(300, 300, Color.color(0, 0, 0, 0.5));
+                Rectangle overlay = new Rectangle(300, 300, Color.color(0, 0, 0, 0.45));
 
                 StackPane stackPane = new StackPane();
-                stackPane.getChildren().addAll(profilePicture, overlay, collectionName);
+                    stackPane.getChildren().addAll(profilePicture, overlay, collectionName);
 
-                imagesGrid.add(stackPane, column, row); // Add to the calculated cell of the grid
+                    // Add an EventHandler for left click
+                    stackPane.setOnMouseClicked(event -> {
+                        if (event.getButton() == MouseButton.PRIMARY) {
+                            // Create a new Stage for the modal window
+                            Stage modal = new Stage();
+                            modal.initModality(Modality.APPLICATION_MODAL);
+                            modal.initOwner(stage);
 
-                // Update row and column for next collection
-                column++;
-                if (column > 2) { // If column is more than 2, reset it to 0 and increase row by 1
-                    column = 0;
-                    row++;
+                            // Create a new instance of CollectionInsideScene and start it in the modal window
+                            CollectionInsideScene collectionInsideScene = null;
+                            try {
+                                collectionInsideScene = new CollectionInsideScene(coll);
+                            } catch (IOException ex) {
+                                throw new RuntimeException(ex);
+                            }
+                            collectionInsideScene.start(modal);
+                        }
+                    });
+
+                    // Create context menu
+                    ContextMenu contextMenu = new ContextMenu();
+
+                    // Create menu items
+                    MenuItem deleteCollection = new MenuItem("Delete Collection");
+
+                    // Add menu items to context menu
+                    contextMenu.getItems().addAll(deleteCollection);
+
+                    // Set actions for menu items
+                    deleteCollection.setOnAction(e -> {
+                        try {
+                            ConfigReader.deleteCollectionInformation(coll);
+                            // Reload the scene to reflect the changes
+                            GalleryScene galleryscene = new GalleryScene();
+                            galleryscene.start(stage);
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    });
+
+                    // Set context menu on stack pane
+                    stackPane.setOnContextMenuRequested(event -> contextMenu.show(stackPane, event.getScreenX(), event.getScreenY()));
+
+                    imagesGrid.add(stackPane, column, row); // Add to the calculated cell of the grid
+
+                    // Update row and column for next collection
+                    column++;
+                    if (column > 2) { // If column is more than 2, reset it to 0 and increase row by 1
+                        column = 0;
+                        row++;
+                    }
                 }
-            }
 
             imagesVbox.getChildren().add(imagesGrid);
         }

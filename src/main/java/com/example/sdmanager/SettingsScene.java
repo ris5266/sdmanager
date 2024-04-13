@@ -56,7 +56,9 @@ public class SettingsScene extends Application {
 
 
         Text path = new Text("Folder path: ");
+
         TextField inputpath = new TextField();
+        inputpath.setEditable(false);
         inputpath.setPrefHeight(26);
         inputpath.setPrefWidth(250);
         inputpath.setText(imagepath.getAbsolutePath());
@@ -89,6 +91,14 @@ public class SettingsScene extends Application {
         applypane.setPrefHeight(532);
         applypane.getChildren().add(apply);
         applypane.setPadding(new Insets(0, 0, 10, 0));
+
+        apply.setOnMouseEntered(e -> {
+            apply.setStyle("-fx-background-color: #f2ce6b");
+        });
+        apply.setOnMouseExited(e -> {
+            apply.setStyle("-fx-background-color: #ffbe0b");
+
+        });
 
         main.setAlignment(Pos.CENTER);
         settings.add(path, 0, 1);

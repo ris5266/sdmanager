@@ -5,7 +5,7 @@ public class Prompt {
     private String negPrompt;
     private String profilePicture;
 
-    Prompt(String negPrompt, String posPrompt, String profilePicture) {
+    Prompt(String posPrompt, String negPrompt, String profilePicture) {
         this.posPrompt = posPrompt;
         this.negPrompt = negPrompt;
         this.profilePicture = profilePicture;

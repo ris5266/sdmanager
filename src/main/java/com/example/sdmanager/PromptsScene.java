@@ -6,12 +6,11 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -104,27 +103,104 @@ public class PromptsScene extends Application {
 
         profilePictureInputBox.getChildren().addAll(profilePictureInput, profilePictureButton);
 
+        profilePictureInput.setEditable(false);
+
+        profilePictureButton.setStyle("-fx-background-color: white");
+        posPrompt.setStyle("-fx-background-color: white");
+        negPrompt.setStyle("-fx-background-color: white");
+
+
+        posPrompt.setOnMouseEntered(e -> {
+            posPrompt.setStyle("-fx-background-color: #f2ce6b");
+        });
+
+        posPrompt.setOnMouseExited(e -> {
+            posPrompt.setStyle("-fx-background-color: white");
+        });
+
+        negPrompt.setOnMouseEntered(e -> {
+            negPrompt.setStyle("-fx-background-color: #f2ce6b");
+        });
+
+        negPrompt.setOnMouseExited(e -> {
+            negPrompt.setStyle("-fx-background-color: white");
+        });
+
+        profilePictureButton.setOnMouseEntered(e -> {
+            profilePictureButton.setStyle("-fx-background-color: #f2ce6b");
+        });
+
+        profilePictureButton.setOnMouseExited(e -> {
+                    profilePictureButton.setStyle("-fx-background-color: white");
+                }
+        );
+
         Button submit = new Button("Create Prompt");
+        submit.setStyle("-fx-background-color: #ffbe0b");
+
+        submit.setOnMouseEntered(e -> {
+            submit.setStyle("-fx-background-color: #f2ce6b");
+        });
+
+        submit.setOnMouseExited(e -> {
+            submit.setStyle("-fx-background-color: #ffbe0b");
+        });
+
         submit.setOnAction(e -> {
             String pPrompt = posPrompt.getText();
             String nPrompt = negPrompt.getText();
             String profilePictureUrl = profilePictureInput.getText();
 
             if (!profilePictureUrl.isEmpty() && !pPrompt.isEmpty() && !nPrompt.isEmpty()) {
-                Prompt finalprompt = new Prompt(pPrompt, profilePictureUrl, nPrompt);
+                Prompt finalprompt = new Prompt(pPrompt, nPrompt, profilePictureUrl);
                 try {
                     ConfigReader.writePromptsInformation(finalprompt);
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
                 modal.close();
+                try {
+                    PromptsScene promptScene = new PromptsScene();
+                    promptScene.start(stage);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             } else {
+                if(pPrompt.isEmpty()) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Invalid Input");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Positive Prompt must not be empty.");
+                    alert.showAndWait();
+                }
+                if(nPrompt.isEmpty()) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Invalid Input");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Negative Prompt must not be empty.");
+                    alert.showAndWait();
+                }
+                // Show an error message if the profile picture URL does not start with "file:/"
+                if (!profilePictureUrl.startsWith("file:/")) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Invalid Input");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Profile picture must contain a image from your computer.");
+                    alert.showAndWait();
+                }
             }
         });
+        layout.setPadding(new Insets(10, 10, 10, 10));
+        layout.setSpacing(5);
+        Text title = new Text("Create Prompt");
+        title.setFont(new Font(20));
 
+        layout.getChildren().add(title);
         layout.getChildren().addAll(posPrompt, negPrompt, profilePictureInputBox, submit);
 
         modalScene = new Scene(layout);
+        modal.setResizable(false);
+
         modal.setScene(modalScene);
         modal.showAndWait();
     }
@@ -163,6 +239,7 @@ public class PromptsScene extends Application {
 
         FlowPane inputpane = new FlowPane();
         TextField searchinput = new TextField();
+        searchinput.setDisable(true);
         inputpane.setAlignment(Pos.CENTER);
         inputpane.getChildren().add(searchinput);
         inputpane.setPrefWidth(201);
@@ -200,10 +277,10 @@ public class PromptsScene extends Application {
 
         home.setStyle("-fx-background-color: white");
         images.setStyle("-fx-background-color: white");
-        prompts.setStyle("-fx-background-color: white");
+        prompts.setStyle("-fx-background-color: #ffbe0b");
 
         home.setOnMouseEntered(e -> {
-            home.setStyle("-fx-background-color: #ffbe0b");
+            home.setStyle("-fx-background-color: #f2ce6b");
         });
         home.setOnMouseExited(e -> {
             home.setStyle("-fx-background-color: white");
@@ -211,18 +288,13 @@ public class PromptsScene extends Application {
         });
 
         images.setOnMouseEntered(e -> {
-            images.setStyle("-fx-background-color: #ffbe0b");
+            images.setStyle("-fx-background-color: #f2ce6b");
         });
         images.setOnMouseExited(e -> {
             images.setStyle("-fx-background-color: white");
         });
 
-        prompts.setOnMouseEntered(e -> {
-            prompts.setStyle("-fx-background-color: #ffbe0b");
-        });
-        prompts.setOnMouseExited(e -> {
-            prompts.setStyle("-fx-background-color: white");
-        });
+
 
         home.setOnAction(e -> {
             GalleryScene galleryScene = null;
@@ -322,6 +394,9 @@ public class PromptsScene extends Application {
             scrollPane.setPrefHeight(700);
             scrollPane.setPrefWidth(982);
             scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+            scrollPane.setStyle("-fx-focus-color: transparent");
+            scrollPane.setStyle("-fx-faint-focus-color: transparent");
+            scrollPane.setStyle("-fx-background-color: transparent");
 
             imagesGrid = new GridPane();
             scrollPane.setContent(imagesGrid);
@@ -348,12 +423,58 @@ public class PromptsScene extends Application {
 
                 Label posPrompt = new Label(coll.getPosPrompt());
                 posPrompt.setTextFill(Color.WHITE);
+                posPrompt.setWrapText(true); // Enable text wrapping
+                posPrompt.setMaxWidth(300); // Set the maximum width to the width of the image
+                posPrompt.setPadding(new Insets(10)); // Add a margin of 10 pixels on all sides
+                posPrompt.setAlignment(Pos.CENTER);
 
-
-                Rectangle overlay = new Rectangle(300, 300, Color.color(0, 0, 0, 0.5));
+                Rectangle overlay = new Rectangle(300, 300, Color.color(0, 0, 0, 0.45));
 
                 StackPane stackPane = new StackPane();
                 stackPane.getChildren().addAll(profilePicture, overlay, posPrompt);
+
+
+
+                // Create context menu
+                ContextMenu contextMenu = new ContextMenu();
+
+                // Create menu items
+                MenuItem copyPosPrompt = new MenuItem("Copy Positive Prompt");
+                MenuItem copyNegPrompt = new MenuItem("Copy Negative Prompt");
+                MenuItem deletePrompt = new MenuItem("Delete Prompt");
+
+                // Add menu items to context menu
+                contextMenu.getItems().addAll(copyPosPrompt, copyNegPrompt, deletePrompt);
+
+                // Set actions for menu items
+                copyPosPrompt.setOnAction(e -> {
+                    final Clipboard clipboard = Clipboard.getSystemClipboard();
+                    final ClipboardContent content = new ClipboardContent();
+                    content.putString(coll.getPosPrompt());
+                    clipboard.setContent(content);
+                });
+
+                copyNegPrompt.setOnAction(e -> {
+                    final Clipboard clipboard = Clipboard.getSystemClipboard();
+                    final ClipboardContent content = new ClipboardContent();
+                    content.putString(coll.getNegPrompt());
+                    clipboard.setContent(content);
+                });
+
+                deletePrompt.setOnAction(e -> {
+                    try {
+                        ConfigReader.deletePromptInformation(coll);
+                        // Reload the scene to reflect the changes
+                        PromptsScene promptsScene = new PromptsScene();
+                        promptsScene.start(stage);
+
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                });
+
+                // Set context menu on stack pane
+                stackPane.setOnContextMenuRequested(event -> contextMenu.show(stackPane, event.getScreenX(), event.getScreenY()));
 
                 imagesGrid.add(stackPane, column, row); // Add to the calculated cell of the grid
 
