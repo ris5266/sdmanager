@@ -2,12 +2,10 @@ package com.example.sdmanager;
 
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
-import java.util.List;
-
+// This class is a model class that represents a collection of images.
 public class Collection {
     private String name;
     private String profilePicture;
@@ -19,15 +17,14 @@ public class Collection {
         this.imagefolderpath = imagefolderpath;
     }
 
-
-        public Node createNode() {
-            VBox box = new VBox();
-            Label nameLabel = new Label(name);
-            ImageView profilePictureView = new ImageView(profilePicture);
-            box.getChildren().addAll(nameLabel, profilePictureView);
-            return box;
-        }
-
+    // This method creates a node that represents the collection.
+    public Node createNode() {
+        VBox box = new VBox();
+        Label nameLabel = new Label(name);
+        ImageView profilePictureView = new ImageView(profilePicture);
+        box.getChildren().addAll(nameLabel, profilePictureView);
+        return box;
+    }
 
     public String getProfilePicture() {
         return profilePicture;

@@ -10,11 +10,9 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -26,16 +24,13 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-
 import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
 public class CollectionInsideScene extends Application {
-
     public static void main(String[] args) {
         launch(args);
     }
@@ -47,10 +42,9 @@ public class CollectionInsideScene extends Application {
     private int imageamout;
     private Text amountText;
     private Stage primaryStage;
-
-
     private Collection collection;
 
+    // Constructor that takes a Collection object as a parameter to display the images in the collection
     public CollectionInsideScene(Collection collection) throws IOException {
         this.collection = collection;
         imagepath = new File(collection.getImageFolderPath());
@@ -59,7 +53,8 @@ public class CollectionInsideScene extends Application {
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        // rechte hälfte mit amountnamen und images
+
+        // right side with amountcount and images
         VBox imagesVbox = new VBox();
         FlowPane amountPane = new FlowPane();
         amountText = new Text(imageamout + " images added to collection");
@@ -69,7 +64,7 @@ public class CollectionInsideScene extends Application {
         amountPane.setPrefWidth(400);
         amountText.setFont(new Font(14));
 
-
+        // ScrollPane for the GridPane
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setPrefHeight(700);
         scrollPane.setPrefWidth(982);
@@ -78,46 +73,42 @@ public class CollectionInsideScene extends Application {
         scrollPane.setStyle("-fx-faint-focus-color: transparent");
         scrollPane.setStyle("-fx-background-color: transparent");
 
-
+        // Create a GridPane to hold the images
         imagesGrid = new GridPane();
         scrollPane.setContent(imagesGrid);
-
         imagesGrid.setPrefHeight(700);
         imagesGrid.setPrefWidth(982);
         imagesGrid.setHgap(20);
         imagesGrid.setVgap(20);
         imagesGrid.setPadding(new Insets(20, 20, 20, 20));
 
-
         imagesVbox.getChildren().addAll(amountPane, scrollPane);
-
 
         sort();
         Scene scene = new Scene(imagesVbox, 1000, 720);
         primaryStage.setResizable(false);
-
         primaryStage.setScene(scene);
-
         primaryStage.setTitle("Diffusion Depot");
         primaryStage.getIcons().add(new Image("icon.jpg"));
-
         primaryStage.show();
     }
 
+    // Method to read out the images from the folder and display them in the GridPane with the ability to show the metadata and copy the prompts or open the image
     public void sort() {
         int j = 0;
         String[] imageExtensions = new String[]{"jpg", "png", "gif", "bmp", "jpeg"};
         File[] files = imagepath.listFiles();
 
+        // no images found
         if (files == null) {
             System.out.println("No files found");
             imageamout = 0;
             amountText.setText(imageamout + " images added to the collection");
             return;
         }
+        int imageCount = 0;
 
-        int imageCount = 0; // Variable to count the number of image files
-
+        // Loop through the files in the folder and add them to the gridpane
         for (int i = 0; i < files.length; i++) {
             String fileName = files[i].getName();
             for (String extensions : imageExtensions) {
@@ -127,32 +118,29 @@ public class CollectionInsideScene extends Application {
                         FileInputStream fileInputStream = new FileInputStream(files[i]);
                         Image image = new Image(fileInputStream);
                         pictures = new ImageView(image);
-
-                        // Set the ImageView's preserveRatio property to true
                         pictures.setPreserveRatio(true);
 
-                        // Set the ImageView's viewport to display a portion of the image
+                        // view images only in 300x300
                         double width = image.getWidth();
                         double height = image.getHeight();
                         double boxRatio = 300.0 / 300.0;
                         double imageAspect = width / height;
 
                         if (imageAspect > boxRatio) {
-                            // The image is wider than the desired aspect ratio, so we need to crop the width
+                            // if image is wider than the desired aspect ratio, the width needs to be cropped
                             double newWidth = height * boxRatio;
                             double xOffset = (width - newWidth) / 2;
                             pictures.setViewport(new Rectangle2D(xOffset, 0, newWidth, height));
                         } else {
-                            // The image is taller than the desired aspect ratio, so we need to crop the height
+                            // if image is taller than the desired aspect ratio, the height needs to be cropped
                             double newHeight = width / boxRatio;
                             double yOffset = (height - newHeight) / 2;
                             pictures.setViewport(new Rectangle2D(0, yOffset, width, newHeight));
                         }
-
                         pictures.setFitHeight(300);
                         pictures.setFitWidth(300);
 
-
+                        // metadata
                         Rectangle overlay = new Rectangle(300, 300, Color.color(0, 0, 0, 0.5));
                         Label overlayText = new Label();
                         Metadata metadata = ImageMetadataReader.readMetadata(files[i]);
@@ -166,15 +154,14 @@ public class CollectionInsideScene extends Application {
                         overlayText.setAlignment(Pos.CENTER);
                         overlayText.setPadding(new Insets(10, 10, 10, 10));
 
-                        // Initially hide the overlay and the text
+                        // hide overlay and text at the beginning
                         overlay.setVisible(false);
                         overlayText.setVisible(false);
 
-                        // Create a StackPane to hold the ImageView, Rectangle and Label
+                        // show metadata if the user clicks on a image
                         StackPane stackPane = new StackPane();
                         stackPane.getChildren().addAll(pictures, overlay, overlayText);
 
-// Add an EventHandler to the ImageView
                         stackPane.setOnMouseClicked(event -> {
                             if (event.getButton() == MouseButton.PRIMARY) {
                                 // Toggle the visibility of the overlay and the text
@@ -184,12 +171,14 @@ public class CollectionInsideScene extends Application {
 
                                 if (overlay.isVisible()) {
                                     output.setLength(0);
+                                    // stable diffusion web ui saves the parameter [PNG-tEXt] in the metadata
+                                    // so we need to go through all metadata tags and check if the tag contains this parameter
                                     for (Directory directory : metadata.getDirectories()) {
-                                        // go through the directory.getTags() and check if the tag contains "[PNG-tEXt]"
                                         for (Tag tag : directory.getTags()) {
                                             if (tag.toString().contains("[PNG-tEXt]")) {
                                                 System.out.println(tag.toString());
                                                 String parameters = tag.toString();
+                                                // parameter is currently a string that contains all the parameters so we need to split it to get the individual parameters
                                                 positivePrompt = null;
                                                 if (parameters.contains("Negative prompt")) {
                                                     positivePrompt = parameters.split("parameters: ")[1].split("Negative prompt")[0];
@@ -210,6 +199,7 @@ public class CollectionInsideScene extends Application {
                                                 String size =  parameters.split("Size: ")[1].split(",")[0];
                                                 String model = parameters.split("Model: ")[1].split(",")[0];
 
+                                                // display the metadata sorted
                                                 overlayText.setText("Positive Prompt: " + positivePrompt +
                                                         "Negative Prompt: " + negativePrompt + "\n" +
                                                         "Size: " + size + "\n" +
@@ -230,11 +220,9 @@ public class CollectionInsideScene extends Application {
 
                         });
 
-
-                        // Create a ContextMenu
+                        // menuitems for copying the prompts
                         ContextMenu contextMenu = new ContextMenu();
 
-                        // Create a MenuItem for copying the prompt
                         MenuItem copyPosPromptItem = new MenuItem("Copy Positive Prompt");
                         copyPosPromptItem.setOnAction(event -> {
                             Clipboard clipboard = Clipboard.getSystemClipboard();
@@ -253,7 +241,7 @@ public class CollectionInsideScene extends Application {
                             clipboard.setContent(content);
                         });
 
-                        // Create a MenuItem for opening the image
+                        // menuitem for opening the image
                         MenuItem openImageItem = new MenuItem("Open Image");
                         final File file = files[i];
                         openImageItem.setOnAction(event -> {
@@ -265,17 +253,13 @@ public class CollectionInsideScene extends Application {
                                 }
                             }
                         });
-
-                        // Add the MenuItems to the ContextMenu
                         contextMenu.getItems().addAll(openImageItem, copyPosPromptItem, copyNegPromptItem);
 
-                        // Add the ContextMenu to the StackPane
                         stackPane.setOnContextMenuRequested(event -> {
                             contextMenu.show(stackPane, event.getScreenX(), event.getScreenY());
                         });
 
-
-// Add the StackPane to the GridPane instead of the ImageView
+                        // add the image to the gridpane
                         imagesGrid.add(stackPane, i % 3, j);
                         if (i % 3 == 2) {
                             j++;
@@ -289,13 +273,13 @@ public class CollectionInsideScene extends Application {
                 }
             }
         }
-        imageamout = imageCount; // Update imageamout with the correct count
+        imageamout = imageCount;
         amountText.setText(imageamout + " images added to the collection");
     }
 
+    // since sort() shouldnt be called everytime the user wants to copy the prompts
     public String getPositivePrompt(Metadata metadata2) {
                 for (Directory directory : metadata2.getDirectories()) {
-                    // go through the directory.getTags() and check if the tag contains "[PNG-tEXt]"
                     for (Tag tag : directory.getTags()) {
                         if (tag.toString().contains("[PNG-tEXt]")) {
                             System.out.println(tag.toString());
@@ -318,7 +302,6 @@ public class CollectionInsideScene extends Application {
 
     public String getNegativePrompt(Metadata metadata2) {
         for (Directory directory : metadata2.getDirectories()) {
-            // go through the directory.getTags() and check if the tag contains "[PNG-tEXt]"
             for (Tag tag : directory.getTags()) {
                 if (tag.toString().contains("[PNG-tEXt]")) {
                     System.out.println(tag.toString());

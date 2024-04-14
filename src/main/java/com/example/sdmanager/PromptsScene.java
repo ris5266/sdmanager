@@ -1,13 +1,10 @@
 package com.example.sdmanager;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
@@ -17,50 +14,30 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.scene.Parent;
 import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 
 public class PromptsScene extends Application {
-
     public static void main(String[] args) {
         launch(args);
     }
 
-    File imagepath;
-
     GridPane imagesGrid;
-    VBox imagesVbox;
     Label nocharacters;
     FlowPane nocharacterspane;
-
     private Text amountText;
-
-    int characteramount = 0;
     Prompt[] promptsObject;
     Scene modalScene;
-    Scene scene;
     HBox teiler;
     Stage stage;
 
-
+    // read out the prompts information
     public PromptsScene() throws IOException {
         try {
             promptsObject = ConfigReader.readPromptsInformation();
@@ -75,7 +52,7 @@ public class PromptsScene extends Application {
         load();
     }
 
-
+    // Create a modal to add a new prompt
     private void createCollectionModal() {
         Stage modal = new Stage();
         modal.initModality(Modality.APPLICATION_MODAL);
@@ -93,7 +70,6 @@ public class PromptsScene extends Application {
         TextField negPrompt = new TextField();
         negPrompt.setPromptText("Negative Prompt");
 
-
         profilePictureButton.setOnAction(e -> {
             FileChooser fileChooser = new FileChooser();
             File file = fileChooser.showOpenDialog(modal);
@@ -103,14 +79,10 @@ public class PromptsScene extends Application {
         });
 
         profilePictureInputBox.getChildren().addAll(profilePictureInput, profilePictureButton);
-
         profilePictureInput.setEditable(false);
-
         profilePictureButton.setStyle("-fx-background-color: white");
         posPrompt.setStyle("-fx-background-color: white");
         negPrompt.setStyle("-fx-background-color: white");
-
-
 
         profilePictureButton.setOnMouseEntered(e -> {
             profilePictureButton.setStyle("-fx-background-color: #e98c78");
@@ -132,6 +104,7 @@ public class PromptsScene extends Application {
             submit.setStyle("-fx-background-color: #cc7a68");
         });
 
+        // submit the inputs and write the prompt information to the config file
         submit.setOnAction(e -> {
             String pPrompt = posPrompt.getText();
             String nPrompt = negPrompt.getText();
@@ -152,6 +125,7 @@ public class PromptsScene extends Application {
                     throw new RuntimeException(ex);
                 }
             } else {
+                // show an error message if the positive prompt is empty
                 if(pPrompt.isEmpty()) {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Invalid Input");
@@ -159,6 +133,7 @@ public class PromptsScene extends Application {
                     alert.setContentText("Positive Prompt must not be empty.");
                     alert.showAndWait();
                 }
+                // show an error message if the negative prompt is empty
                 if(nPrompt.isEmpty()) {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Invalid Input");
@@ -166,7 +141,7 @@ public class PromptsScene extends Application {
                     alert.setContentText("Negative Prompt must not be empty.");
                     alert.showAndWait();
                 }
-                // Show an error message if the profile picture URL does not start with "file:/"
+                // show an error message if the profile picture URL does not start with "file:/"
                 if (!profilePictureUrl.startsWith("file:/")) {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Invalid Input");
@@ -186,34 +161,24 @@ public class PromptsScene extends Application {
 
         modalScene = new Scene(layout);
         modal.setResizable(false);
-
         modal.setScene(modalScene);
         modal.showAndWait();
     }
 
-    private boolean isValidUrl(String url) {
-        try {
-            new URL(url);
-            return true;
-        } catch (MalformedURLException e) {
-            return false;
-        }
-    }
-
     public void load() {
-        // teilter teilt in linke und rechte hälfte
+        // hbox that splits the window in two parts
         teiler = new HBox();
         teiler.setPrefHeight(800);
         teiler.setPrefWidth(1200);
 
-        // header ist die linke hälfte
+        // vbox for the left side
         VBox header = new VBox();
         teiler.getChildren().add(header);
         header.setPrefHeight(400);
         header.setPrefWidth(201);
         teiler.setAlignment(Pos.TOP_LEFT);
 
-        // programname + input
+        // software name + input
         FlowPane softwarepane = new FlowPane();
         Text softwarename = new Text("Diffusion Depot");
         softwarepane.getChildren().add(softwarename);
@@ -222,9 +187,7 @@ public class PromptsScene extends Application {
         softwarepane.setAlignment(Pos.CENTER);
         softwarepane.setPrefHeight(39);
         softwarepane.setPrefWidth(222);
-
         softwarename.setFont(Font.font("Verdana", FontWeight.BOLD, 17));
-
 
         FlowPane inputpane = new FlowPane();
         TextField searchinput = new TextField();
@@ -252,6 +215,9 @@ public class PromptsScene extends Application {
         add.setStyle("-fx-background-color: #cc7a68");
         add.setPrefWidth(70);
         add.setPrefHeight(26);
+        home.setStyle("-fx-background-color: white");
+        images.setStyle("-fx-background-color: white");
+        prompts.setStyle("-fx-background-color: #cc7a68");
 
         add.setOnMouseEntered(e -> {
             add.setStyle("-fx-background-color: #e98c78");
@@ -259,21 +225,14 @@ public class PromptsScene extends Application {
         add.setOnMouseExited(e -> {
             add.setStyle("-fx-background-color: #cc7a68");
         });
-
         add.setOnAction(e -> {
             createCollectionModal();
         });
-
-        home.setStyle("-fx-background-color: white");
-        images.setStyle("-fx-background-color: white");
-        prompts.setStyle("-fx-background-color: #cc7a68");
-
         home.setOnMouseEntered(e -> {
             home.setStyle("-fx-background-color: #e98c78");
         });
         home.setOnMouseExited(e -> {
             home.setStyle("-fx-background-color: white");
-
         });
 
         images.setOnMouseEntered(e -> {
@@ -283,8 +242,7 @@ public class PromptsScene extends Application {
             images.setStyle("-fx-background-color: white");
         });
 
-
-
+        // change the differents windows
         home.setOnAction(e -> {
             GalleryScene galleryScene = null;
             try {
@@ -305,7 +263,6 @@ public class PromptsScene extends Application {
             imageScene.start(stage);
         });
 
-
         // settings button
         FlowPane settingspane = new FlowPane();
         settingspane.setAlignment(Pos.CENTER);
@@ -323,7 +280,6 @@ public class PromptsScene extends Application {
         settings.setOnMouseExited(e -> {
             settings.setStyle("-fx-background-color: white");
         });
-
         settings.setOnAction(e -> {
             SettingsScene settingsScene = null;
             try {
@@ -331,15 +287,15 @@ public class PromptsScene extends Application {
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
-
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             settingsScene.start(stage);
             stage.showAndWait();
         });
-        header.getChildren().addAll(softwarepane, inputpane, buttonpane, settingspane);
-        // rechte hälfte mit amountnamen und images
 
+        header.getChildren().addAll(softwarepane, inputpane, buttonpane, settingspane);
+
+        // vbox for the right side
         VBox imagesVbox = new VBox();
         imagesVbox.setPrefHeight(800);
         imagesVbox.setPrefWidth(980);
@@ -357,8 +313,7 @@ public class PromptsScene extends Application {
         hboxright.setPrefHeight(54);
         hboxright.getChildren().addAll(amountPane, add);
 
-
-
+        // if there are no prompts, show a different layout
         if (promptsObject == null || promptsObject.length == 0) {
             nocharacterspane = new FlowPane();
             nocharacters = new Label("no prompts found ☹\uFE0F");
@@ -370,7 +325,6 @@ public class PromptsScene extends Application {
             imagesVbox.getChildren().addAll(hboxright, nocharacterspane);
 
             teiler.getChildren().add(imagesVbox);
-
         } else {
             amountText = new Text(promptsObject.length + " prompts added to viewport");
             amountPane.getChildren().add(amountText);
@@ -401,8 +355,7 @@ public class PromptsScene extends Application {
             imagesVbox.getChildren().addAll(hboxright, scrollPane);
             teiler.getChildren().add(imagesVbox);
 
-
-
+            // go through the prompts and add them to the grid
             int row = 0;
             int column = 0;
             for (Prompt coll : promptsObject) {
@@ -412,9 +365,9 @@ public class PromptsScene extends Application {
 
                 Label posPrompt = new Label(coll.getPosPrompt());
                 posPrompt.setTextFill(Color.WHITE);
-                posPrompt.setWrapText(true); // Enable text wrapping
-                posPrompt.setMaxWidth(300); // Set the maximum width to the width of the image
-                posPrompt.setPadding(new Insets(10)); // Add a margin of 10 pixels on all sides
+                posPrompt.setWrapText(true);
+                posPrompt.setMaxWidth(300);
+                posPrompt.setPadding(new Insets(10));
                 posPrompt.setAlignment(Pos.CENTER);
 
                 Rectangle overlay = new Rectangle(300, 300, Color.color(0, 0, 0, 0.45));
@@ -422,34 +375,27 @@ public class PromptsScene extends Application {
                 overlay.setOpacity(0);
                 posPrompt.setOpacity(0);
 
-
                 StackPane stackPane = new StackPane();
                 stackPane.getChildren().addAll(profilePicture, overlay, posPrompt);
 
-                // When the mouse enters the image area, set the opacity of the overlay and the prompt text back to its original value
+                // when the user hovers over the image, show the overlay and the positive prompt
                 stackPane.setOnMouseEntered(event -> {
                     overlay.setOpacity(0.8);
                     posPrompt.setOpacity(1);
                 });
 
-                // When the mouse exits the image area, set the opacity of the overlay and the prompt text to 0
                 stackPane.setOnMouseExited(event -> {
                     overlay.setOpacity(0);
                     posPrompt.setOpacity(0);
                 });
 
-                // Create context menu
                 ContextMenu contextMenu = new ContextMenu();
-
-                // Create menu items
                 MenuItem copyPosPrompt = new MenuItem("Copy Positive Prompt");
                 MenuItem copyNegPrompt = new MenuItem("Copy Negative Prompt");
                 MenuItem deletePrompt = new MenuItem("Delete Prompt");
 
-                // Add menu items to context menu
                 contextMenu.getItems().addAll(copyPosPrompt, copyNegPrompt, deletePrompt);
 
-                // Set actions for menu items
                 copyPosPrompt.setOnAction(e -> {
                     final Clipboard clipboard = Clipboard.getSystemClipboard();
                     final ClipboardContent content = new ClipboardContent();
@@ -467,7 +413,7 @@ public class PromptsScene extends Application {
                 deletePrompt.setOnAction(e -> {
                     try {
                         ConfigReader.deletePromptInformation(coll);
-                        // Reload the scene to reflect the changes
+                        // reload the scene to show the changes
                         PromptsScene promptsScene = new PromptsScene();
                         promptsScene.start(stage);
 
@@ -475,30 +421,22 @@ public class PromptsScene extends Application {
                         throw new RuntimeException(ex);
                     }
                 });
-
-                // Set context menu on stack pane
                 stackPane.setOnContextMenuRequested(event -> contextMenu.show(stackPane, event.getScreenX(), event.getScreenY()));
+                imagesGrid.add(stackPane, column, row);
 
-                imagesGrid.add(stackPane, column, row); // Add to the calculated cell of the grid
-
-                // Update row and column for next collection
                 column++;
-                if (column > 2) { // If column is more than 2, reset it to 0 and increase row by 1
+                if (column > 2) {
                     column = 0;
                     row++;
                 }
             }
-
             imagesVbox.getChildren().add(imagesGrid);
         }
+
         Scene scene = new Scene(teiler, 1200, 800);
         stage.setResizable(false);
-
         stage.setScene(scene);
-
         stage.setTitle("Diffusion Depot");
         stage.show();
-
-
     }
 }

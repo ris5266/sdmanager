@@ -1,10 +1,8 @@
 package com.example.sdmanager;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -20,22 +18,9 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.scene.Parent;
 import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 
 public class GalleryScene extends Application {
 
@@ -43,31 +28,24 @@ public class GalleryScene extends Application {
         launch(args);
     }
 
-    File imagepath;
-
     GridPane imagesGrid;
-    VBox imagesVbox;
     Label nocharacters;
     FlowPane nocharacterspane;
     TextField searchinput;
-
     private Text amountText;
-
-    int characteramount = 0;
     Collection[] collection;
     Scene modalScene;
-    Scene scene;
     HBox teiler;
     Stage stage;
 
-
+    // read out collection information
     public GalleryScene() throws IOException {
         try {
             collection = ConfigReader.readCollectionInformation();
-            } catch (
-            JSONException e) {
+        } catch (
+                JSONException e) {
             collection = null;
-            }
+        }
     }
 
     @Override
@@ -76,7 +54,7 @@ public class GalleryScene extends Application {
         load();
     }
 
-
+    // Create a modal window to create a new collection
     private void createCollectionModal() {
         Stage modal = new Stage();
         modal.initModality(Modality.APPLICATION_MODAL);
@@ -106,6 +84,14 @@ public class GalleryScene extends Application {
         Button imagesButton = new Button("Select Folder");
 
         imagesButton.setStyle("-fx-background-color: white");
+        profilePictureButton.setStyle("-fx-background-color: white");
+
+        imagesInputBox.getChildren().addAll(imagesInput, imagesButton);
+        profilePictureInput.setEditable(false);
+        imagesInput.setEditable(false);
+
+        Button submit = new Button("Create Collection");
+        submit.setStyle("-fx-background-color: #cc7a68");
 
         imagesButton.setOnMouseEntered(e -> {
             imagesButton.setStyle("-fx-background-color: #e98c78");
@@ -120,15 +106,9 @@ public class GalleryScene extends Application {
         });
 
         profilePictureButton.setOnMouseExited(e -> {
-            profilePictureButton.setStyle("-fx-background-color: white");
+                    profilePictureButton.setStyle("-fx-background-color: white");
                 }
         );
-
-
-
-
-        profilePictureButton.setStyle("-fx-background-color: white");
-
 
         imagesButton.setOnAction(e -> {
             DirectoryChooser directoryChooser = new DirectoryChooser();
@@ -137,11 +117,6 @@ public class GalleryScene extends Application {
                 imagesInput.setText(directory.getAbsolutePath());
             }
         });
-        imagesInputBox.getChildren().addAll(imagesInput, imagesButton);
-        profilePictureInput.setEditable(false);
-        imagesInput.setEditable(false);
-        Button submit = new Button("Create Collection");
-        submit.setStyle("-fx-background-color: #cc7a68");
 
         submit.setOnMouseEntered(e -> {
             submit.setStyle("-fx-background-color: #e98c78");
@@ -180,7 +155,7 @@ public class GalleryScene extends Application {
                     alert.setContentText("Collection Name must not be empty.");
                     alert.showAndWait();
                 }
-                // Show an error message if the profile picture URL does not start with "file:/"
+                // show an error message if the profile picture URL does not start with "file:/"
                 if (!profilePictureUrl.startsWith("file:/")) {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Invalid Input");
@@ -188,7 +163,7 @@ public class GalleryScene extends Application {
                     alert.setContentText("Profile picture must contain a image from your computer.");
                     alert.showAndWait();
                 }
-                // Show an error message if the imageUrls does not represent a valid directory
+                // show an error message if the imageUrls does not represent a valid directory
                 if (!imageDirectory.isDirectory()) {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Invalid Input");
@@ -203,40 +178,28 @@ public class GalleryScene extends Application {
         Text title = new Text("Create Collection");
         title.setFont(new Font(20));
         layout.getChildren().add(title);
-
         layout.getChildren().addAll(nameInput, profilePictureInputBox, imagesInputBox, submit);
 
         modalScene = new Scene(layout);
         modal.setResizable(false);
-
         modal.setScene(modalScene);
         modal.showAndWait();
     }
 
-    private boolean isValidUrl(String url) {
-        try {
-            new URL(url);
-            return true;
-        } catch (MalformedURLException e) {
-            return false;
-        }
-    }
-
     public void load() {
-
-        // teilter teilt in linke und rechte hälfte
+        // hbox for the left and right side
         teiler = new HBox();
         teiler.setPrefHeight(800);
         teiler.setPrefWidth(1200);
 
-        // header ist die linke hälfte
+        // header for the left side
         VBox header = new VBox();
         teiler.getChildren().add(header);
         header.setPrefHeight(400);
         header.setPrefWidth(201);
         teiler.setAlignment(Pos.TOP_LEFT);
 
-        // programname + input
+        // software name + input
         FlowPane softwarepane = new FlowPane();
         Text softwarename = new Text("Diffusion Depot");
         softwarepane.getChildren().add(softwarename);
@@ -273,6 +236,9 @@ public class GalleryScene extends Application {
         add.setStyle("-fx-background-color: #cc7a68");
         add.setPrefWidth(70);
         add.setPrefHeight(26);
+        home.setStyle("-fx-background-color: #cc7a68");
+        images.setStyle("-fx-background-color: white");
+        prompts.setStyle("-fx-background-color: white");
 
         add.setOnMouseEntered(e -> {
             add.setStyle("-fx-background-color: #e98c78");
@@ -284,12 +250,6 @@ public class GalleryScene extends Application {
         add.setOnAction(e -> {
             createCollectionModal();
         });
-
-        home.setStyle("-fx-background-color: #cc7a68");
-        images.setStyle("-fx-background-color: white");
-        prompts.setStyle("-fx-background-color: white");
-
-
 
         images.setOnMouseEntered(e -> {
             images.setStyle("-fx-background-color: #e98c78");
@@ -305,6 +265,7 @@ public class GalleryScene extends Application {
             prompts.setStyle("-fx-background-color: white");
         });
 
+        // switch windows
         prompts.setOnAction(e -> {
             PromptsScene galleryScene = null;
             try {
@@ -324,7 +285,6 @@ public class GalleryScene extends Application {
             }
             imageScene.start(stage);
         });
-
 
         // settings button
         FlowPane settingspane = new FlowPane();
@@ -358,8 +318,8 @@ public class GalleryScene extends Application {
             stage.showAndWait();
         });
         header.getChildren().addAll(softwarepane, inputpane, buttonpane, settingspane);
-        // rechte hälfte mit amountnamen und images
 
+        // right side layout
         VBox imagesVbox = new VBox();
         imagesVbox.setPrefHeight(800);
         imagesVbox.setPrefWidth(980);
@@ -378,8 +338,7 @@ public class GalleryScene extends Application {
         hboxright.getChildren().addAll(amountPane, add);
         softwarename.setFont(Font.font("Verdana", FontWeight.BOLD, 17));
 
-
-
+        // if theres no collections found a different layout will be shown instead of the collections
         if (collection == null || collection.length == 0) {
             nocharacterspane = new FlowPane();
             nocharacters = new Label("no collections found ☹\uFE0F");
@@ -389,7 +348,6 @@ public class GalleryScene extends Application {
             nocharacterspane.setPrefWidth(568);
             nocharacterspane.getChildren().add(nocharacters);
             imagesVbox.getChildren().addAll(hboxright, nocharacterspane);
-
             teiler.getChildren().add(imagesVbox);
         } else {
             amountText = new Text(collection.length + " collections added to viewport");
@@ -399,7 +357,6 @@ public class GalleryScene extends Application {
             amountPane.setPrefWidth(924);
             amountText.setFont(new Font(14));
 
-
             ScrollPane scrollPane = new ScrollPane();
             scrollPane.setPrefHeight(700);
             scrollPane.setPrefWidth(982);
@@ -408,9 +365,6 @@ public class GalleryScene extends Application {
             scrollPane.setStyle("-fx-faint-focus-color: transparent");
             scrollPane.setStyle("-fx-background-color: transparent");
 
-
-
-
             imagesGrid = new GridPane();
             scrollPane.setContent(imagesGrid);
 
@@ -418,6 +372,7 @@ public class GalleryScene extends Application {
             imagesGrid.setPrefWidth(982);
             imagesGrid.setHgap(20);
             imagesGrid.setVgap(20);
+
             hboxright.setPadding( new Insets(12, 0, 0, 0));
             hboxright.setPrefWidth(400);
             hboxright.setPrefHeight(54);
@@ -425,8 +380,7 @@ public class GalleryScene extends Application {
             imagesVbox.getChildren().addAll(hboxright, scrollPane);
             teiler.getChildren().add(imagesVbox);
 
-
-
+            // go through the collections and display them with the menu option to delete it
             int row = 0;
             int column = 0;
             for (Collection coll : collection) {
@@ -440,72 +394,59 @@ public class GalleryScene extends Application {
                 Rectangle overlay = new Rectangle(300, 300, Color.color(0, 0, 0, 0.45));
 
                 StackPane stackPane = new StackPane();
-                    stackPane.getChildren().addAll(profilePicture, overlay, collectionName);
+                stackPane.getChildren().addAll(profilePicture, overlay, collectionName);
 
-                    // Add an EventHandler for left click
-                    stackPane.setOnMouseClicked(event -> {
-                        if (event.getButton() == MouseButton.PRIMARY) {
-                            // Create a new Stage for the modal window
-                            Stage modal = new Stage();
-                            modal.initModality(Modality.APPLICATION_MODAL);
-                            modal.initOwner(stage);
+                // Add an EventHandler for left click
+                stackPane.setOnMouseClicked(event -> {
+                    if (event.getButton() == MouseButton.PRIMARY) {
+                        // Create a new Stage for the modal window
+                        Stage modal = new Stage();
+                        modal.initModality(Modality.APPLICATION_MODAL);
+                        modal.initOwner(stage);
 
-                            // Create a new instance of CollectionInsideScene and start it in the modal window
-                            CollectionInsideScene collectionInsideScene = null;
-                            try {
-                                collectionInsideScene = new CollectionInsideScene(coll);
-                            } catch (IOException ex) {
-                                throw new RuntimeException(ex);
-                            }
-                            collectionInsideScene.start(modal);
-                        }
-                    });
-
-                    // Create context menu
-                    ContextMenu contextMenu = new ContextMenu();
-
-                    // Create menu items
-                    MenuItem deleteCollection = new MenuItem("Delete Collection");
-
-                    // Add menu items to context menu
-                    contextMenu.getItems().addAll(deleteCollection);
-
-                    // Set actions for menu items
-                    deleteCollection.setOnAction(e -> {
+                        // Create a new instance of CollectionInsideScene and start it in the modal window
+                        CollectionInsideScene collectionInsideScene = null;
                         try {
-                            ConfigReader.deleteCollectionInformation(coll);
-                            // Reload the scene to reflect the changes
-                            GalleryScene galleryscene = new GalleryScene();
-                            galleryscene.start(stage);
+                            collectionInsideScene = new CollectionInsideScene(coll);
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
-                    });
-
-                    // Set context menu on stack pane
-                    stackPane.setOnContextMenuRequested(event -> contextMenu.show(stackPane, event.getScreenX(), event.getScreenY()));
-
-                    imagesGrid.add(stackPane, column, row); // Add to the calculated cell of the grid
-
-                    // Update row and column for next collection
-                    column++;
-                    if (column > 2) { // If column is more than 2, reset it to 0 and increase row by 1
-                        column = 0;
-                        row++;
+                        collectionInsideScene.start(modal);
                     }
-                }
+                });
 
+                ContextMenu contextMenu = new ContextMenu();
+                MenuItem deleteCollection = new MenuItem("Delete Collection");
+                contextMenu.getItems().addAll(deleteCollection);
+
+                deleteCollection.setOnAction(e -> {
+                    try {
+                        ConfigReader.deleteCollectionInformation(coll);
+                        // Reload the scene to reflect the changes
+                        GalleryScene galleryscene = new GalleryScene();
+                        galleryscene.start(stage);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                });
+
+                stackPane.setOnContextMenuRequested(event -> contextMenu.show(stackPane, event.getScreenX(), event.getScreenY()));
+                imagesGrid.add(stackPane, column, row);
+
+                column++;
+                if (column > 2) {
+                    column = 0;
+                    row++;
+                }
+            }
             imagesVbox.getChildren().add(imagesGrid);
         }
+
         Scene scene = new Scene(teiler, 1200, 800);
         stage.setResizable(false);
         stage.getIcons().add(new Image("icon.jpg"));
-
         stage.setScene(scene);
-
         stage.setTitle("Diffusion Depot");
         stage.show();
-
-
     }
 }

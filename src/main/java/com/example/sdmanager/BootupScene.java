@@ -14,13 +14,9 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
 import java.io.File;
 import java.io.IOException;
-import java.io.ObjectInputFilter;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -28,7 +24,6 @@ public class BootupScene extends Application {
     // components
     Button submit;
     GridPane pane;
-    Text welcome;
     Text tutorial;
     TextField path;
     Button inputButton;
@@ -38,11 +33,11 @@ public class BootupScene extends Application {
     GridPane inputField;
     VBox submitVbox;
     VBox mainVbox;
-
     Scene scene;
     Stage stage;
-
-
+    Image icon;
+    ImageView iconView;
+    Text title;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -53,27 +48,29 @@ public class BootupScene extends Application {
         submitVbox = new VBox();
         path = new TextField();
         inputButton = new Button("+");
-        inputButton.setStyle("-fx-background-color: white");
         inputField = new GridPane();
         submit = new Button("Submit");
+        icon = new Image("icon.jpg");
+        iconView = new ImageView(icon);
+        title = new Text("Diffusion Depot");
+        tutorial = new Text("please select your sd output folder:");
 
-
-
-        Image icon = new Image("icon.jpg");
-        ImageView iconView = new ImageView(icon);
+        // styling
+        inputButton.setStyle("-fx-background-color: white");
         iconView.setFitHeight(150);
         iconView.setFitWidth(150);
-        Text title = new Text("Diffusion Depot");
         title.setFill(Color.WHITE);
         title.setStyle("-fx-font-size: 30px");
         title.setFont(Font.font("Verdana", FontWeight.BOLD, 20));
-
-
-
-        tutorial = new Text("please select your sd output folder:");
         submit.setStyle("-fx-background-color: #white");
+        tutorial.setFill(Color.WHITE);
+        pane.setAlignment(Pos.CENTER);
+
+        // disable submit button
         submit.setDisable(true);
         path.setEditable(false);
+
+        // hover effects
         submit.setOnMouseEntered(e -> {
             submit.setStyle("-fx-background-color: #b6b6b6");
         });
@@ -81,14 +78,21 @@ public class BootupScene extends Application {
             submit.setStyle("-fx-background-color: #white");
         });
 
-        tutorial.setFill(Color.WHITE);
-
+        // action events
         DirectoryChooser directorychooser = new DirectoryChooser();
         inputButton.setOnAction(e -> {
             folderpath = directorychooser.showDialog(stage);
             if(folderpath != null) {
                 path.setText(folderpath.getAbsolutePath());
                 submit.setDisable(false);
+            }
+        });
+
+        submit.setOnAction(e -> {
+            try {
+                submit();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
             }
         });
 
@@ -103,16 +107,6 @@ public class BootupScene extends Application {
             }
         }
 
-        submit.setOnAction(e -> {
-            try {
-                submit();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
-
-        pane.setAlignment(Pos.CENTER);
-
         // field + button
         inputField.add(path, 0, 0);
         inputField.add(inputButton, 1,  0);
@@ -122,7 +116,7 @@ public class BootupScene extends Application {
         submitVbox.getChildren().add(submit);
         submitVbox.setAlignment(Pos.CENTER);
 
-        // layouts kombinieren
+        // combine layouts
         vbox.getChildren().addAll(title, iconView, tutorial);
         vbox.setAlignment(Pos.CENTER);
         vbox.setSpacing(3);
@@ -134,7 +128,6 @@ public class BootupScene extends Application {
         mainVbox.getChildren().addAll(pane, submitVbox);
         mainVbox.setSpacing(30);
         mainVbox.setAlignment(Pos.CENTER);
-
 
         scene = new Scene(mainVbox, 800, 600);
         pane.setStyle("-fx-background-color: #744237");

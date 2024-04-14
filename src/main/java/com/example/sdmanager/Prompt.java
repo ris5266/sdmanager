@@ -1,5 +1,6 @@
 package com.example.sdmanager;
 
+// This class is a model class that represents a prompt object
 public class Prompt {
     private String posPrompt;
     private String negPrompt;
