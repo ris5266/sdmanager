@@ -376,6 +376,7 @@ public class GalleryScene extends Application {
         hboxright.setPrefWidth(400);
         hboxright.setPrefHeight(54);
         hboxright.getChildren().addAll(amountPane, add);
+        softwarename.setFont(Font.font("Verdana", FontWeight.BOLD, 17));
 
 
 
@@ -408,7 +409,6 @@ public class GalleryScene extends Application {
             scrollPane.setStyle("-fx-background-color: transparent");
 
 
-            softwarename.setFont(Font.font("Verdana", FontWeight.BOLD, 17));
 
 
             imagesGrid = new GridPane();
