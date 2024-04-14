@@ -28,3 +28,8 @@
 
 📝 **Prompts**: Save important prompts to quickly copy them if needed.
 
+<div align="center">
+
+  <img src="https://github.com/ris5266/sdmanager/blob/main/readmegif.gif" alt="logo" size="20%"/>
+  
+</div>
