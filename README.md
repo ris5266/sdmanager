@@ -12,7 +12,7 @@
 <div align="center">
 
   ---
-  [**Features**](#features) | [**Installation**](#installation) | [**Upcoming**](#upcoming)
+  [**Features**](#features) | [**Upcoming**](#upcoming)
 
   ---
 
@@ -33,3 +33,10 @@
   <img src="https://github.com/ris5266/sdmanager/blob/main/readmegif.gif" alt="logo" size="20%"/>
   
 </div>
+
+## Upcoming
+
+- search function
+- one click image prompt transfer
+- delete & add images from inside the software
+- ... and more!
