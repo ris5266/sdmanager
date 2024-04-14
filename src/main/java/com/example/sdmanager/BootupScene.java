@@ -22,22 +22,22 @@ import java.nio.file.Paths;
 
 public class BootupScene extends Application {
     // components
-    Button submit;
-    GridPane pane;
-    Text tutorial;
-    TextField path;
-    Button inputButton;
-    File folderpath;
+    private Button submit;
+    private GridPane pane;
+    private Text tutorial;
+    private TextField path;
+    private Button inputButton;
+    private File folderpath;
     // layouts
-    VBox vbox;
-    GridPane inputField;
-    VBox submitVbox;
-    VBox mainVbox;
-    Scene scene;
-    Stage stage;
-    Image icon;
-    ImageView iconView;
-    Text title;
+    private VBox vbox;
+    private GridPane inputField;
+    private VBox submitVbox;
+    private VBox mainVbox;
+    private Scene scene;
+    private Stage stage;
+    private Image icon;
+    private ImageView iconView;
+    private Text title;
 
     @Override
     public void start(Stage stage) throws IOException {

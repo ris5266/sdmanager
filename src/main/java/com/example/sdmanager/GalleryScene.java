@@ -28,15 +28,15 @@ public class GalleryScene extends Application {
         launch(args);
     }
 
-    GridPane imagesGrid;
-    Label nocharacters;
-    FlowPane nocharacterspane;
-    TextField searchinput;
+    private GridPane imagesGrid;
+    private Label nocharacters;
+    private FlowPane nocharacterspane;
+    private TextField searchinput;
     private Text amountText;
-    Collection[] collection;
-    Scene modalScene;
-    HBox teiler;
-    Stage stage;
+    private Collection[] collection;
+    private Scene modalScene;
+    private HBox teiler;
+    private Stage stage;
 
     // read out collection information
     public GalleryScene() throws IOException {

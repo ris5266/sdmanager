@@ -28,14 +28,14 @@ public class PromptsScene extends Application {
         launch(args);
     }
 
-    GridPane imagesGrid;
-    Label nocharacters;
-    FlowPane nocharacterspane;
+    private GridPane imagesGrid;
+    private Label nocharacters;
+    private FlowPane nocharacterspane;
     private Text amountText;
-    Prompt[] promptsObject;
-    Scene modalScene;
-    HBox teiler;
-    Stage stage;
+    private Prompt[] promptsObject;
+    private Scene modalScene;
+    private HBox teiler;
+    private Stage stage;
 
     // read out the prompts information
     public PromptsScene() throws IOException {

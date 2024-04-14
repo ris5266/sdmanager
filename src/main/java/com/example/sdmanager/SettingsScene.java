@@ -21,9 +21,9 @@ public class SettingsScene extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-    File selectedDirectory;
-    File imagepath;
-    Stage stage;
+    private File selectedDirectory;
+    private File imagepath;
+    private Stage stage;
 
     // read out the sd output folder path
     public SettingsScene(Stage stage) throws IOException {
