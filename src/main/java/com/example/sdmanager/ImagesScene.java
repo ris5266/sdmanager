@@ -22,6 +22,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -110,6 +111,7 @@ public class ImagesScene extends Application {
             home.setStyle("-fx-background-color: white");
         });
 
+        softwarename.setFont(Font.font("Verdana", FontWeight.BOLD, 17));
 
 
         prompts.setOnMouseEntered(e -> {

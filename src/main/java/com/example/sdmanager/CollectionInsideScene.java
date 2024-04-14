@@ -64,8 +64,8 @@ public class CollectionInsideScene extends Application {
         FlowPane amountPane = new FlowPane();
         amountText = new Text(imageamout + " images added to collection");
         amountPane.getChildren().add(amountText);
-        amountPane.setMargin(amountText, new Insets(7, 0, 0, 5));
-        amountPane.setPrefHeight(20);
+        amountPane.setMargin(amountText, new Insets(7, 0, 0, 15));
+        amountPane.setPrefHeight(0);
         amountPane.setPrefWidth(400);
         amountText.setFont(new Font(14));
 

@@ -14,6 +14,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -405,6 +406,10 @@ public class GalleryScene extends Application {
             scrollPane.setStyle("-fx-focus-color: transparent");
             scrollPane.setStyle("-fx-faint-focus-color: transparent");
             scrollPane.setStyle("-fx-background-color: transparent");
+
+
+            softwarename.setFont(Font.font("Verdana", FontWeight.BOLD, 17));
+
 
             imagesGrid = new GridPane();
             scrollPane.setContent(imagesGrid);
