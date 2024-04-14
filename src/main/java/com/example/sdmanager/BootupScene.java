@@ -141,7 +141,7 @@ public class BootupScene extends Application {
         vbox.setStyle("-fx-background-color: #744237");
         mainVbox.setStyle("-fx-background-color: #744237");
 
-        stage.setTitle("sdmanager");
+        stage.setTitle("Diffusion Depot");
         stage.getIcons().add(new Image("icon.jpg"));
         stage.setScene(scene);
 
