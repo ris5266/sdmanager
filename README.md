@@ -5,7 +5,7 @@
 # Stable Diffusion Image Manager
 </div>
 
-### A Stable Diffusion Image Manager built for images created with the [SD Web UI](https://github.com/AUTOMATIC1111/stable-diffusion-webui)
+### A Stable Diffusion Image Manager built for images generated with the [SD Web UI](https://github.com/AUTOMATIC1111/stable-diffusion-webui)
 
 > still under development
 
