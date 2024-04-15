@@ -38,5 +38,5 @@
 
 - search function
 - one click image prompt transfer
-- delete & add images from inside the software
+- generate, delete & add images from inside the software
 - ... and more!
